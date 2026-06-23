@@ -1,0 +1,66 @@
+import type { BreedProfile } from '../types';
+
+export const BREED_PROFILES: BreedProfile[] = [
+  {
+    breed: 'Golden Retriever',
+    averageWeight: { min: 25, max: 38 },
+    averageChest: { min: 60, max: 78 },
+    averageNeck: { min: 40, max: 52 },
+    averageBack: { min: 48, max: 62 },
+    commonSizes: ['L', 'XL', 'XXL'],
+    imageUrl: 'https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=400&q=80',
+    description: 'Friendly, reliable, and trustworthy. Golden Retrievers have broad chests and athletic builds.',
+  },
+  {
+    breed: 'Labrador',
+    averageWeight: { min: 25, max: 36 },
+    averageChest: { min: 58, max: 76 },
+    averageNeck: { min: 38, max: 50 },
+    averageBack: { min: 46, max: 60 },
+    commonSizes: ['L', 'XL', 'XXL'],
+    imageUrl: 'https://images.unsplash.com/photo-1611003228941-98852ba62227?w=400&q=80',
+    description: 'Active and outgoing. Labradors are muscular and athletic with deep, broad chests.',
+  },
+  {
+    breed: 'German Shepherd',
+    averageWeight: { min: 22, max: 40 },
+    averageChest: { min: 55, max: 74 },
+    averageNeck: { min: 38, max: 52 },
+    averageBack: { min: 50, max: 65 },
+    commonSizes: ['L', 'XL', 'XXL'],
+    imageUrl: 'https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=400&q=80',
+    description: 'Intelligent and versatile. German Shepherds have a distinctive sloped back and strong necks.',
+  },
+  {
+    breed: 'French Bulldog',
+    averageWeight: { min: 8, max: 14 },
+    averageChest: { min: 44, max: 58 },
+    averageNeck: { min: 28, max: 40 },
+    averageBack: { min: 26, max: 34 },
+    commonSizes: ['XS', 'S', 'M'],
+    imageUrl: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400&q=80',
+    description: 'Compact and muscular. French Bulldogs have wide chests and short, stocky bodies requiring special sizing.',
+  },
+  {
+    breed: 'Husky',
+    averageWeight: { min: 16, max: 28 },
+    averageChest: { min: 52, max: 70 },
+    averageNeck: { min: 36, max: 48 },
+    averageBack: { min: 44, max: 58 },
+    commonSizes: ['M', 'L', 'XL'],
+    imageUrl: 'https://images.unsplash.com/photo-1605568427561-40dd23c2acea?w=400&q=80',
+    description: 'Athletic and energetic. Huskies have a medium build with a thick double coat to consider.',
+  },
+  {
+    breed: 'Poodle',
+    averageWeight: { min: 18, max: 32 },
+    averageChest: { min: 50, max: 68 },
+    averageNeck: { min: 32, max: 46 },
+    averageBack: { min: 40, max: 56 },
+    commonSizes: ['M', 'L', 'XL'],
+    imageUrl: 'https://images.unsplash.com/photo-1616684000067-36952fde56ec?w=400&q=80',
+    description: 'Elegant and intelligent. Standard Poodles are tall with a square build and elegant proportions.',
+  },
+];
+
+export const BREED_NAMES = BREED_PROFILES.map(b => b.breed);
