@@ -337,8 +337,8 @@ export function Landing() {
         <div className="max-w-screen-xl mx-auto">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl gradient-primary flex items-center justify-center">
-                <span className="text-white text-sm font-black">CP</span>
+              <div className="w-8 h-8 rounded-xl overflow-hidden shadow-sm bg-white">
+                <img src="/canda_pooch.png" alt="Canada Pooch" className="w-full h-full object-contain" />
               </div>
               <div>
                 <p className="font-bold text-white text-sm">Canada Pooch AI Fit Intelligence</p>

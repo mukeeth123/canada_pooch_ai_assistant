@@ -32,14 +32,9 @@ export function Navbar() {
       <nav className="fixed top-0 left-0 right-0 z-40 glass border-b border-slate-200/60 dark:border-slate-700/60 dark:bg-slate-900/85">
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 flex-shrink-0">
-            <div className="w-8 h-8 rounded-xl gradient-primary flex items-center justify-center shadow-sm">
-              <span className="text-white text-sm font-black">CP</span>
-            </div>
-            <div className="hidden sm:block">
-              <span className="font-black text-slate-900 dark:text-white text-sm tracking-tight">Canada Pooch</span>
-              <div className="text-[10px] text-gradient font-semibold -mt-0.5">AI Fit Intelligence</div>
-            </div>
+          <Link to="/" className="flex flex-col flex-shrink-0">
+            <img src="/canda_pooch.png" alt="Canada Pooch" className="h-8 w-auto object-contain object-left" />
+            <span className="text-[10px] text-gradient font-semibold leading-none mt-0.5 pl-3">AI Fit Intelligence</span>
           </Link>
 
           {/* Desktop Nav */}
@@ -183,9 +178,14 @@ export function Navbar() {
               className="fixed right-0 top-0 bottom-0 z-50 w-72 bg-white dark:bg-slate-900 shadow-2xl overflow-y-auto"
             >
               <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-800">
-                <div>
-                  <p className="font-black text-slate-900 dark:text-white text-sm">Canada Pooch</p>
-                  <p className="text-[10px] text-gradient font-semibold">AI Fit Intelligence</p>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl overflow-hidden shadow-sm bg-white flex-shrink-0">
+                    <img src="/canda_pooch.png" alt="Canada Pooch" className="w-full h-full object-contain" />
+                  </div>
+                  <div>
+                    <p className="font-black text-slate-900 dark:text-white text-sm">Canada Pooch</p>
+                    <p className="text-[10px] text-gradient font-semibold">AI Fit Intelligence</p>
+                  </div>
                 </div>
                 <button onClick={() => setDrawerOpen(false)} className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
                   <X className="w-4 h-4 text-slate-500" />

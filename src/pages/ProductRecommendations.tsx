@@ -186,7 +186,7 @@ export function ProductRecommendations() {
         className="relative rounded-3xl overflow-hidden mb-8 h-44 sm:h-52"
       >
         <img
-          src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=1200&q=80"
+          src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80"
           alt="Dog wearing Canada Pooch jacket"
           className="w-full h-full object-cover"
         />
