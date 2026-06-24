@@ -267,7 +267,7 @@ function DogSVG({
         <motion.path
           d="M 148 115 C 148 108 155 100 162 100 L 380 118 C 388 118 390 126 388 136 L 386 252 C 386 258 380 260 375 258 L 165 246 C 158 244 148 238 148 230 Z"
           fill="none"
-          stroke="#2563EB"
+          stroke="#000000"
           strokeWidth="2.5"
           strokeDasharray="10 5"
           opacity={0.35}
@@ -461,9 +461,9 @@ export function FitVisualization() {
         className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6"
       >
         {[
-          { label: 'Recommended Size', value: rec.recommendedSize, color: 'text-blue-600' },
+          { label: 'Recommended Size', value: rec.recommendedSize, color: 'text-black dark:text-white' },
           { label: 'Fit Score',        value: `${fitScore}%`,           color: 'text-emerald-600' },
-          { label: 'Confidence',       value: `${rec.confidenceScore}%`, color: 'text-cyan-600' },
+          { label: 'Confidence',       value: `${rec.confidenceScore}%`, color: 'text-neutral-600 dark:text-neutral-400' },
           { label: 'Mobility',         value: `${mobilityScore}%`,       color: 'text-purple-600' },
         ].map(item => (
           <Card key={item.label} className="text-center p-4">

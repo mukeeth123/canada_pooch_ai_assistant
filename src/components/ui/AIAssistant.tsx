@@ -65,7 +65,7 @@ export function AIAssistant() {
                 <div key={msg.id} className={`flex ${msg.from === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[80%] px-3 py-2 rounded-2xl text-xs leading-relaxed ${
                     msg.from === 'user'
-                      ? 'bg-blue-600 text-white rounded-br-sm'
+                      ? 'bg-black text-white rounded-br-sm'
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-bl-sm'
                   }`}>
                     {msg.text}
@@ -79,7 +79,7 @@ export function AIAssistant() {
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && send()}
                 placeholder="Ask me anything..."
-                className="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs outline-none focus:border-blue-400"
+                className="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs outline-none focus:border-black"
               />
               <button onClick={send} className="w-9 h-9 rounded-xl gradient-primary flex items-center justify-center flex-shrink-0">
                 <Send className="w-3.5 h-3.5 text-white" />

@@ -4,8 +4,8 @@ import { ArrowRight, CheckCircle, Zap, Shield, TrendingUp, Star, ChevronDown } f
 import { Button } from '../components/ui/Button';
 
 const kpis = [
-  { value: '95%', label: 'Fit Accuracy', color: 'text-blue-400' },
-  { value: '38%', label: 'Fewer Returns', color: 'text-cyan-400' },
+  { value: '95%', label: 'Fit Accuracy', color: 'text-white' },
+  { value: '38%', label: 'Fewer Returns', color: 'text-neutral-300' },
   { value: '22%', label: 'Higher Conversion', color: 'text-emerald-400' },
   { value: '18%', label: 'Higher AOV', color: 'text-amber-400' },
 ];
@@ -15,13 +15,13 @@ const features = [
     icon: Zap,
     title: 'AI-Powered Sizing',
     desc: 'Breed-specific algorithms trained on 14,000+ real sizing outcomes deliver 95% accuracy.',
-    color: 'bg-blue-500',
+    color: 'bg-black',
   },
   {
     icon: Shield,
     title: 'Return Risk Prediction',
     desc: 'Know the probability of a return before purchase and offer the optimal alternative.',
-    color: 'bg-cyan-500',
+    color: 'bg-neutral-700',
   },
   {
     icon: TrendingUp,
@@ -57,9 +57,9 @@ export function Landing() {
       <section className="gradient-hero min-h-screen flex flex-col justify-center relative overflow-hidden">
         {/* Background blobs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 -left-40 w-80 h-80 bg-cyan-500/15 rounded-full blur-3xl" />
-          <div className="absolute bottom-20 right-20 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl" />
+          <div className="absolute -top-40 -right-40 w-96 h-96 bg-neutral-600/10 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 -left-40 w-80 h-80 bg-neutral-500/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-20 w-64 h-64 bg-neutral-400/5 rounded-full blur-3xl" />
         </div>
 
         <div className="relative max-w-screen-xl mx-auto px-4 sm:px-6 py-24 sm:py-32 grid lg:grid-cols-2 gap-16 items-center">
@@ -69,9 +69,9 @@ export function Landing() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-500/40 bg-blue-500/10 text-blue-300 text-xs font-semibold mb-6"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/30 bg-white/10 text-white text-xs font-semibold mb-6"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
               AI-Powered Enterprise Fit Intelligence
             </motion.div>
 
@@ -146,7 +146,7 @@ export function Landing() {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="hidden lg:block relative"
           >
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-blue-900/50">
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-black/50">
               <img
                 src="https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=700&q=80"
                 alt="Golden Retriever wearing Canada Pooch jacket"
@@ -165,7 +165,7 @@ export function Landing() {
                     <p className="text-slate-500 text-xs">AI Recommendation: XXL</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-blue-600 font-black text-xl">96%</p>
+                    <p className="text-black font-black text-xl">96%</p>
                     <p className="text-slate-400 text-xs">Confidence</p>
                   </div>
                 </div>
@@ -193,7 +193,7 @@ export function Landing() {
       <section className="py-20 sm:py-28 bg-white dark:bg-slate-900">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6">
           <motion.div {...fadeUp()} className="text-center max-w-2xl mx-auto mb-16">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-semibold mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 dark:bg-neutral-900/30 text-black dark:text-neutral-400 text-xs font-semibold mb-4">
               <Zap className="w-3 h-3" /> Enterprise Capabilities
             </div>
             <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white">
@@ -305,8 +305,8 @@ export function Landing() {
       {/* CTA Section */}
       <section className="py-20 gradient-hero relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl" />
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-neutral-500/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-neutral-500/10 rounded-full blur-3xl" />
         </div>
         <div className="relative max-w-screen-md mx-auto px-4 sm:px-6 text-center">
           <motion.div {...fadeUp()}>
@@ -318,7 +318,7 @@ export function Landing() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/fit-finder">
-                <Button size="xl" variant="gradient" className="w-full sm:w-auto bg-white text-blue-700 hover:bg-slate-50">
+                <Button size="xl" variant="gradient" className="w-full sm:w-auto bg-white text-black hover:bg-slate-50">
                   Start Fit Analysis <ArrowRight className="w-5 h-5" />
                 </Button>
               </Link>

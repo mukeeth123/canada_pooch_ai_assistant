@@ -315,9 +315,9 @@ export function UserInteractions() {
                   })}
                 </div>
 
-                <div className="mt-6 p-4 rounded-2xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/40">
-                  <p className="text-xs font-bold text-blue-700 dark:text-blue-400 mb-2">🤖 AI Insight</p>
-                  <p className="text-sm text-blue-600 dark:text-blue-300 leading-relaxed">
+                <div className="mt-6 p-4 rounded-2xl bg-neutral-100 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800/40">
+                  <p className="text-xs font-bold text-black dark:text-neutral-400 mb-2">🤖 AI Insight</p>
+                  <p className="text-sm text-black dark:text-neutral-300 leading-relaxed">
                     The biggest drop-off (13%) occurs between "Started Form" and "Entered Measurements."
                     Adding inline measurement guides with visual diagrams at this step is projected to recover
                     8–10% of users, translating to ~80 additional fit completions per 1,000 visitors.
@@ -394,7 +394,7 @@ export function UserInteractions() {
                     >
                       <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
                         evt.type === 'success' ? 'bg-emerald-500' :
-                        evt.type === 'warning' ? 'bg-amber-500' : 'bg-blue-500'
+                        evt.type === 'warning' ? 'bg-amber-500' : 'bg-neutral-500'
                       }`} />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
@@ -414,14 +414,14 @@ export function UserInteractions() {
           {/* Live counters */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
-              { label: 'Active Users Now', value: '47', color: 'text-blue-600', pulse: true },
+              { label: 'Active Users Now', value: '47', color: 'text-black dark:text-white', pulse: true },
               { label: 'Fit Checks Today', value: '361', color: 'text-emerald-600', pulse: false },
-              { label: 'Avg Confidence Score', value: '93%', color: 'text-cyan-600', pulse: false },
+              { label: 'Avg Confidence Score', value: '93%', color: 'text-neutral-600 dark:text-neutral-400', pulse: false },
               { label: 'Completions Today', value: '329', color: 'text-purple-600', pulse: false },
             ].map(item => (
               <Card key={item.label} className="text-center p-4">
                 <div className="flex items-center justify-center gap-1.5 mb-1">
-                  {item.pulse && <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />}
+                  {item.pulse && <span className="w-1.5 h-1.5 rounded-full bg-black animate-pulse" />}
                   <p className="text-xs text-slate-400">{item.label}</p>
                 </div>
                 <p className={`text-2xl font-black ${item.color}`}>{item.value}</p>

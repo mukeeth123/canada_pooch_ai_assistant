@@ -18,7 +18,7 @@ export function PageHeader({ icon: Icon, badge, title, subtitle, actions }: Page
     >
       <div>
         {badge && (
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800/50 text-blue-700 dark:text-blue-400 text-xs font-semibold mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 dark:bg-neutral-900/30 border border-neutral-200 dark:border-neutral-800/50 text-black dark:text-neutral-400 text-xs font-semibold mb-3">
             {Icon && <Icon className="w-3 h-3" />}
             {badge}
           </div>

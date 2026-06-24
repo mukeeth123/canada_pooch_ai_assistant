@@ -212,13 +212,13 @@ export function ReturnRiskPredictor() {
                   />
                   <Bar dataKey="returnRisk" radius={[6, 6, 0, 0]}>
                     {compareData.map(entry => (
-                      <Cell key={entry.size} fill={entry.size === rec.recommendedSize ? '#2563EB' : entry.returnRisk <= 10 ? '#22C55E' : entry.returnRisk <= 25 ? '#F59E0B' : '#EF4444'} />
+                      <Cell key={entry.size} fill={entry.size === rec.recommendedSize ? '#000000' : entry.returnRisk <= 10 ? '#22C55E' : entry.returnRisk <= 25 ? '#F59E0B' : '#EF4444'} />
                     ))}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
               <div className="flex items-center gap-4 mt-2">
-                <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm bg-blue-600" /><span className="text-xs text-slate-500">Selected</span></div>
+                <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm bg-black" /><span className="text-xs text-slate-500">Selected</span></div>
                 <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm bg-emerald-500" /><span className="text-xs text-slate-500">Low Risk</span></div>
                 <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm bg-red-500" /><span className="text-xs text-slate-500">High Risk</span></div>
               </div>
@@ -235,7 +235,7 @@ export function ReturnRiskPredictor() {
               { size: rec.recommendedSize, risk: returnRisk, fitScore: rec.confidenceScore, label: 'Current Selection', highlight: true },
               { size: altSize, risk: altRisk, fitScore: rec.confidenceScore - 3, label: 'Alternative (Lower Risk)', highlight: false },
             ].map(item => (
-              <div key={item.size} className={`p-5 rounded-2xl border-2 ${item.highlight ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'}`}>
+              <div key={item.size} className={`p-5 rounded-2xl border-2 ${item.highlight ? 'border-black bg-neutral-100 dark:bg-neutral-900/20' : 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'}`}>
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <p className="font-black text-3xl text-slate-900 dark:text-white">Size {item.size}</p>
@@ -257,7 +257,7 @@ export function ReturnRiskPredictor() {
                   <div>
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-slate-600 dark:text-slate-300">Fit Score</span>
-                      <span className="font-bold text-blue-600">{item.fitScore}%</span>
+                      <span className="font-bold text-black dark:text-white">{item.fitScore}%</span>
                     </div>
                     <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                       <motion.div className="h-full rounded-full gradient-accent"

@@ -23,13 +23,13 @@ export function MobileBottomNav() {
               to={to}
               className={cn(
                 'flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-[56px]',
-                active ? 'text-blue-600' : 'text-slate-400 dark:text-slate-500'
+                active ? 'text-black dark:text-white' : 'text-slate-400 dark:text-slate-500'
               )}
             >
-              <div className={cn('w-8 h-8 rounded-xl flex items-center justify-center transition-all', active && 'bg-blue-50 dark:bg-blue-900/30')}>
-                <Icon className={cn('w-4.5 h-4.5', active ? 'text-blue-600' : 'text-slate-400')} />
+              <div className={cn('w-8 h-8 rounded-xl flex items-center justify-center transition-all', active && 'bg-neutral-100 dark:bg-neutral-800')}>
+                <Icon className={cn('w-4.5 h-4.5', active ? 'text-black dark:text-white' : 'text-slate-400')} />
               </div>
-              <span className={cn('text-[10px] font-semibold', active ? 'text-blue-600' : 'text-slate-400')}>{label}</span>
+              <span className={cn('text-[10px] font-semibold', active ? 'text-black dark:text-white' : 'text-slate-400')}>{label}</span>
             </Link>
           );
         })}

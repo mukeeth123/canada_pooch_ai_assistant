@@ -16,8 +16,8 @@ export function ProgressBar({ value, max = 100, label, sublabel, color = 'blue',
   const pct = Math.min((value / max) * 100, 100);
 
   const colors = {
-    blue: 'bg-blue-600',
-    cyan: 'bg-cyan-500',
+    blue: 'bg-black',
+    cyan: 'bg-neutral-500',
     green: 'bg-emerald-500',
     amber: 'bg-amber-500',
     red: 'bg-red-500',

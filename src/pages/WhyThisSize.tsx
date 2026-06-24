@@ -65,7 +65,7 @@ export function WhyThisSize() {
         className="relative rounded-3xl overflow-hidden mb-8 gradient-hero p-6 sm:p-8"
       >
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-20 -right-20 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl" />
+          <div className="absolute -top-20 -right-20 w-64 h-64 bg-neutral-500/10 rounded-full blur-3xl" />
         </div>
         <div className="relative grid sm:grid-cols-3 gap-6 items-center">
           <div className="sm:col-span-2">
@@ -90,8 +90,8 @@ export function WhyThisSize() {
                 />
                 <defs>
                   <linearGradient id="confGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#2563EB" />
-                    <stop offset="100%" stopColor="#06B6D4" />
+                    <stop offset="0%" stopColor="#000000" />
+                    <stop offset="100%" stopColor="#555555" />
                   </linearGradient>
                 </defs>
               </svg>

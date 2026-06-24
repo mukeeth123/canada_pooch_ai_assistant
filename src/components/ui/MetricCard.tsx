@@ -14,8 +14,8 @@ interface MetricCardProps {
 }
 
 const colorMap = {
-  blue: { icon: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-900/20', border: 'border-blue-100 dark:border-blue-800/30' },
-  cyan: { icon: 'text-cyan-600', bg: 'bg-cyan-50 dark:bg-cyan-900/20', border: 'border-cyan-100 dark:border-cyan-800/30' },
+  blue: { icon: 'text-black dark:text-white', bg: 'bg-neutral-100 dark:bg-neutral-900/20', border: 'border-neutral-200 dark:border-neutral-800/30' },
+  cyan: { icon: 'text-black dark:text-white', bg: 'bg-neutral-100 dark:bg-neutral-900/20', border: 'border-neutral-200 dark:border-neutral-800/30' },
   green: { icon: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-900/20', border: 'border-emerald-100 dark:border-emerald-800/30' },
   amber: { icon: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-900/20', border: 'border-amber-100 dark:border-amber-800/30' },
   purple: { icon: 'text-purple-600', bg: 'bg-purple-50 dark:bg-purple-900/20', border: 'border-purple-100 dark:border-purple-800/30' },

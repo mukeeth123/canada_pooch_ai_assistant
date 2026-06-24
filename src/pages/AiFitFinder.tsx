@@ -65,7 +65,7 @@ export function AiFitFinder() {
   };
 
   const inputClass = (err?: { message?: string }) =>
-    `w-full px-4 py-3 rounded-xl border ${err ? 'border-red-400 bg-red-50 dark:bg-red-900/10' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'} text-slate-900 dark:text-white text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/30 transition-all`;
+    `w-full px-4 py-3 rounded-xl border ${err ? 'border-red-400 bg-red-50 dark:bg-red-900/10' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'} text-slate-900 dark:text-white text-sm outline-none focus:border-black focus:ring-2 focus:ring-neutral-200 dark:focus:ring-neutral-700 transition-all`;
 
   return (
     <div className="max-w-screen-md mx-auto px-4 sm:px-6 py-8">
@@ -159,9 +159,9 @@ export function AiFitFinder() {
               </div>
 
               {/* Measurement Guide */}
-              <div className="mt-4 p-4 rounded-2xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/40">
-                <p className="text-xs font-bold text-blue-700 dark:text-blue-400 mb-2">📏 How to measure</p>
-                <ul className="space-y-1 text-xs text-blue-600 dark:text-blue-300">
+              <div className="mt-4 p-4 rounded-2xl bg-neutral-100 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800/40">
+                <p className="text-xs font-bold text-black dark:text-neutral-400 mb-2">📏 How to measure</p>
+                <ul className="space-y-1 text-xs text-black dark:text-neutral-300">
                   <li><strong>Chest:</strong> Widest part behind the front legs</li>
                   <li><strong>Neck:</strong> Widest part of the neck, where collar sits</li>
                   <li><strong>Back:</strong> Base of neck to base of tail</li>

@@ -16,9 +16,9 @@ import { cn } from '../components/ui/cn';
 // ── filter meta ─────────────────────────────────────────────────────────────
 const FILTER_META: Record<string, { icon: React.ElementType; emoji: string; color: string; bg: string; activeBg: string }> = {
   All:      { icon: Filter,          emoji: '🐾', color: 'text-slate-500',   bg: 'bg-slate-100 dark:bg-slate-700',        activeBg: 'bg-slate-800 dark:bg-slate-200' },
-  Winter:   { icon: Snowflake,       emoji: '❄️',  color: 'text-blue-500',    bg: 'bg-blue-50 dark:bg-blue-900/30',        activeBg: 'bg-blue-600' },
+  Winter:   { icon: Snowflake,       emoji: '❄️',  color: 'text-neutral-600', bg: 'bg-neutral-100 dark:bg-neutral-900/30', activeBg: 'bg-neutral-800' },
   Summer:   { icon: Sun,             emoji: '☀️',  color: 'text-amber-500',   bg: 'bg-amber-50 dark:bg-amber-900/20',      activeBg: 'bg-amber-500' },
-  Rain:     { icon: CloudRain,       emoji: '🌧',  color: 'text-cyan-500',    bg: 'bg-cyan-50 dark:bg-cyan-900/20',        activeBg: 'bg-cyan-600' },
+  Rain:     { icon: CloudRain,       emoji: '🌧',  color: 'text-neutral-600', bg: 'bg-neutral-100 dark:bg-neutral-900/20', activeBg: 'bg-neutral-700' },
   Walking:  { icon: PersonStanding,  emoji: '🚶',  color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20',  activeBg: 'bg-emerald-600' },
   Travel:   { icon: Plane,           emoji: '✈️',  color: 'text-purple-500',  bg: 'bg-purple-50 dark:bg-purple-900/20',    activeBg: 'bg-purple-600' },
   Outdoor:  { icon: Mountain,        emoji: '🏔',  color: 'text-orange-500',  bg: 'bg-orange-50 dark:bg-orange-900/20',    activeBg: 'bg-orange-600' },
@@ -103,7 +103,7 @@ function ProductCard({ product, onOpen, wishlist, onWishlist, compare, onCompare
         {/* Product badge below category */}
         {product.badge && (
           <div className="absolute top-9 left-3 mt-1">
-            <span className="px-2.5 py-1 rounded-full bg-blue-600 text-white text-[10px] font-bold shadow-sm">
+            <span className="px-2.5 py-1 rounded-full bg-black text-white text-[10px] font-bold shadow-sm">
               {product.badge}
             </span>
           </div>
@@ -118,7 +118,7 @@ function ProductCard({ product, onOpen, wishlist, onWishlist, compare, onCompare
           </button>
           <button
             onClick={e => { e.stopPropagation(); onCompare(); }}
-            className={cn('w-7 h-7 rounded-full flex items-center justify-center shadow-sm transition-all', compare ? 'bg-blue-600' : 'bg-white/80 backdrop-blur-sm')}
+            className={cn('w-7 h-7 rounded-full flex items-center justify-center shadow-sm transition-all', compare ? 'bg-black' : 'bg-white/80 backdrop-blur-sm')}
           >
             <BarChart2 className={cn('w-3.5 h-3.5', compare ? 'text-white' : 'text-slate-600')} />
           </button>
@@ -143,7 +143,7 @@ function ProductCard({ product, onOpen, wishlist, onWishlist, compare, onCompare
       <div className="p-4 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-2 mb-1.5">
           <h3 className="font-bold text-slate-900 dark:text-white text-sm leading-tight">{product.name}</h3>
-          <span className="text-blue-600 font-black text-base flex-shrink-0">${product.price}</span>
+          <span className="text-black dark:text-white font-black text-base flex-shrink-0">${product.price}</span>
         </div>
         <div className="flex items-center gap-2 mb-2">
           <StarRating rating={product.rating} />
@@ -197,7 +197,7 @@ export function ProductRecommendations() {
               {PRODUCTS.length} products across 6 categories • {state.wishlist.length} in wishlist
             </p>
             <div className="flex gap-2 mt-3 flex-wrap">
-              <span className="px-3 py-1 rounded-full bg-blue-600/80 text-white text-xs font-bold">❄️ Winter Suits</span>
+              <span className="px-3 py-1 rounded-full bg-black/80 text-white text-xs font-bold">❄️ Winter Suits</span>
               <span className="px-3 py-1 rounded-full bg-amber-500/80 text-white text-xs font-bold">☀️ Summer Vests</span>
               <span className="px-3 py-1 rounded-full bg-purple-600/80 text-white text-xs font-bold">✈️ Travel Jackets</span>
             </div>
@@ -242,7 +242,7 @@ export function ProductRecommendations() {
         {filter !== 'All' && (
           <button
             onClick={() => setFilter('All')}
-            className="text-xs text-blue-600 font-semibold hover:underline"
+            className="text-xs text-black dark:text-white font-semibold hover:underline"
           >
             Clear filter
           </button>
@@ -286,7 +286,7 @@ export function ProductRecommendations() {
                   </div>
                   {selected.badge && <Badge variant="default">{selected.badge}</Badge>}
                 </div>
-                <span className="text-3xl font-black text-blue-600">${selected.price}</span>
+                <span className="text-3xl font-black text-black dark:text-white">${selected.price}</span>
               </div>
 
               <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm">{selected.description}</p>
@@ -303,11 +303,11 @@ export function ProductRecommendations() {
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/40">
-                <p className="text-xs font-bold text-blue-700 dark:text-blue-400 mb-1">🤖 AI Recommendation Reason</p>
-                <p className="text-sm text-blue-600 dark:text-blue-300">{selected.recommendationReason}</p>
+              <div className="p-4 rounded-2xl bg-neutral-100 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800/40">
+                <p className="text-xs font-bold text-black dark:text-neutral-400 mb-1">🤖 AI Recommendation Reason</p>
+                <p className="text-sm text-black dark:text-neutral-300">{selected.recommendationReason}</p>
                 {rec && (
-                  <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-600 text-white text-xs font-bold">
+                  <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black text-white text-xs font-bold">
                     <Check className="w-3 h-3" /> Recommended Size: {rec.recommendedSize}
                   </div>
                 )}
@@ -320,8 +320,8 @@ export function ProductRecommendations() {
                     <span key={s} className={cn(
                       'px-3 py-1.5 rounded-xl border text-sm font-bold transition-all',
                       rec?.recommendedSize === s
-                        ? 'bg-blue-600 text-white border-blue-600'
-                        : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-blue-400'
+                        ? 'bg-black text-white border-black'
+                        : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-black'
                     )}>
                       {s} {rec?.recommendedSize === s && '✓'}
                     </span>

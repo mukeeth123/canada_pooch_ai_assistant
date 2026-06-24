@@ -8,7 +8,7 @@ import { cn } from '../components/ui/cn';
 
 const statusConfig = {
   completed: { label: 'Completed', badge: 'success' as const, lineColor: 'bg-emerald-500', dotColor: 'bg-emerald-500', icon: CheckCircle, textColor: 'text-emerald-600' },
-  active: { label: 'In Progress', badge: 'default' as const, lineColor: 'bg-blue-600', dotColor: 'bg-blue-600 shadow-glow', icon: Zap, textColor: 'text-blue-600' },
+  active: { label: 'In Progress', badge: 'default' as const, lineColor: 'bg-black', dotColor: 'bg-black shadow-glow', icon: Zap, textColor: 'text-black dark:text-white' },
   upcoming: { label: 'Upcoming', badge: 'outline' as const, lineColor: 'bg-slate-200 dark:bg-slate-700', dotColor: 'bg-slate-300 dark:bg-slate-600', icon: Clock, textColor: 'text-slate-400' },
 };
 
@@ -31,8 +31,8 @@ export function FutureRoadmap() {
         className="relative rounded-3xl overflow-hidden mb-10 gradient-hero p-8"
       >
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute -top-20 -right-20 w-64 h-64 bg-cyan-500/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/15 rounded-full blur-3xl" />
+          <div className="absolute -top-20 -right-20 w-64 h-64 bg-neutral-500/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-neutral-500/10 rounded-full blur-3xl" />
         </div>
         <div className="relative max-w-2xl">
           <h2 className="text-2xl sm:text-3xl font-black text-white mb-3">
@@ -45,7 +45,7 @@ export function FutureRoadmap() {
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold">
               <CheckCircle className="w-3 h-3" /> Phase 1 Active
             </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/20 border border-blue-500/40 text-blue-300 text-xs font-semibold">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-xs font-semibold">
               <Zap className="w-3 h-3" /> 4 Phases Total
             </div>
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-semibold">
@@ -85,7 +85,7 @@ export function FutureRoadmap() {
                     config.dotColor
                   )}>
                     {phase.status === 'active' && (
-                      <div className="absolute inset-0 rounded-full bg-blue-600 animate-ping opacity-40" />
+                      <div className="absolute inset-0 rounded-full bg-black animate-ping opacity-40" />
                     )}
                     <StatusIcon className={cn('w-3 h-3', phase.status === 'active' ? 'text-white' : 'text-white')} />
                   </div>
@@ -95,9 +95,9 @@ export function FutureRoadmap() {
                 <div className={cn(
                   'rounded-2xl border overflow-hidden transition-all duration-300',
                   isExpanded
-                    ? 'border-blue-200 dark:border-blue-800/60 shadow-card-hover'
+                    ? 'border-neutral-300 dark:border-neutral-700/60 shadow-card-hover'
                     : 'border-slate-100 dark:border-slate-700/50 shadow-card',
-                  phase.status === 'active' && isExpanded && 'border-blue-400 dark:border-blue-600'
+                  phase.status === 'active' && isExpanded && 'border-black dark:border-neutral-400'
                 )}>
                   <button
                     className="w-full flex items-center gap-4 p-5 sm:p-6 bg-white dark:bg-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-left"
@@ -155,7 +155,7 @@ export function FutureRoadmap() {
                               <ul className="space-y-2">
                                 {phase.technicalComponents.map(c => (
                                   <li key={c} className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-300">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 flex-shrink-0" />
+                                    <div className="w-1.5 h-1.5 rounded-full bg-black dark:bg-neutral-400 mt-1.5 flex-shrink-0" />
                                     {c}
                                   </li>
                                 ))}
@@ -168,7 +168,7 @@ export function FutureRoadmap() {
                               <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-3">{phase.businessValue}</p>
                               <div className={cn(
                                 'p-3 rounded-xl border text-sm font-semibold',
-                                phase.status === 'active' ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800/40 text-blue-700 dark:text-blue-300'
+                                phase.status === 'active' ? 'bg-neutral-100 dark:bg-neutral-900/20 border-neutral-300 dark:border-neutral-800/40 text-black dark:text-neutral-300'
                                 : phase.status === 'completed' ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800/40 text-emerald-700 dark:text-emerald-300'
                                 : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'
                               )}>

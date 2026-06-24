@@ -29,7 +29,7 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-40 glass border-b border-slate-200/60 dark:border-slate-700/60 dark:bg-slate-900/85">
+      <nav className="fixed top-0 left-0 right-0 z-40 bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-800">
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex flex-col flex-shrink-0">
@@ -44,10 +44,10 @@ export function Navbar() {
                 key={to}
                 to={to}
                 className={cn(
-                  'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200',
+                  'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200',
                   location.pathname === to
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800'
+                    ? 'bg-black text-white dark:bg-white dark:text-black'
+                    : 'text-neutral-600 hover:text-black hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-800'
                 )}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -108,7 +108,7 @@ export function Navbar() {
                   autoFocus
                   type="text"
                   placeholder="Search products, breeds, insights..."
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/50"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm outline-none focus:border-black focus:ring-2 focus:ring-neutral-200 dark:focus:ring-neutral-700"
                 />
               </div>
             </motion.div>
@@ -131,19 +131,19 @@ export function Navbar() {
                 <h3 className="font-bold text-slate-900 dark:text-white text-sm">Notifications</h3>
                 <button
                   onClick={() => { dispatch({ type: 'CLEAR_NOTIFICATIONS' }); setNotifOpen(false); }}
-                  className="text-xs text-blue-600 font-medium hover:underline"
+                  className="text-xs text-black dark:text-white font-medium hover:underline"
                 >
                   Mark all read
                 </button>
               </div>
               <div className="divide-y divide-slate-50 dark:divide-slate-800 max-h-80 overflow-y-auto">
                 {state.notifications.map(n => (
-                  <div key={n.id} className={cn('px-4 py-3', !n.read && 'bg-blue-50/50 dark:bg-blue-900/10')}>
+                  <div key={n.id} className={cn('px-4 py-3', !n.read && 'bg-neutral-100/50 dark:bg-neutral-900/10')}>
                     <div className="flex items-start gap-2.5">
                       <div className={cn('w-2 h-2 rounded-full mt-1.5 flex-shrink-0', {
                         'bg-emerald-500': n.type === 'success',
                         'bg-amber-500': n.type === 'warning',
-                        'bg-blue-500': n.type === 'info',
+                        'bg-neutral-500': n.type === 'info',
                         'bg-red-500': n.type === 'error',
                       })} />
                       <div>
@@ -200,7 +200,7 @@ export function Navbar() {
                     className={cn(
                       'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all',
                       location.pathname === to
-                        ? 'bg-blue-600 text-white'
+                        ? 'bg-black text-white'
                         : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
                     )}
                   >
