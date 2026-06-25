@@ -129,8 +129,8 @@ export function Landing() {
               transition={{ duration: 0.7, delay: 0.1 }}
               className="text-4xl sm:text-5xl xl:text-6xl font-black text-white leading-tight tracking-tight"
             >
-              Canada Pooch
-              <span className="block text-gradient mt-1">AI Fit Intelligence</span>
+              Every Pet Deserves
+              <span className="block text-[#C17A3D] mt-1">the Perfect Fit.</span>
             </motion.h1>
 
             <motion.p
@@ -139,10 +139,7 @@ export function Landing() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="mt-6 text-slate-300 text-lg sm:text-xl leading-relaxed max-w-xl"
             >
-              Reduce Returns. Increase Customer Confidence. Drive More Revenue.
-              <span className="block mt-2 text-slate-400 text-base">
-                The enterprise AI platform purpose-built for Canada Pooch.
-              </span>
+              Intelligent fit recommendations for every pet
             </motion.p>
 
             {/* KPIs */}
