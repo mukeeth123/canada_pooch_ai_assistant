@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Home, Ruler, Info, Eye, ShoppingBag, AlertTriangle,
-  Activity, Map, Moon, Sun, Bell, Menu, X, Search
+  Activity, Map, Moon, Sun, Bell, Menu, X, Search, TrendingUp
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { cn } from '../ui/cn';
@@ -17,6 +17,7 @@ const navItems = [
   { to: '/return-risk', label: 'Return Risk', icon: AlertTriangle },
   { to: '/interactions', label: 'Interactions', icon: Activity },
   { to: '/roadmap', label: 'Roadmap', icon: Map },
+  { to: '/roi-dashboard', label: 'ROI Dashboard', icon: TrendingUp },
 ];
 
 export function Navbar() {

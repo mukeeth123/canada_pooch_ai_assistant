@@ -27,7 +27,7 @@ export interface Product {
   id: string;
   name: string;
   price: number;
-  category: 'Winter' | 'Summer' | 'Rain' | 'Walking' | 'Travel' | 'Outdoor';
+  category: 'Parkas & Jackets' | 'Raincoats' | 'Suits' | 'Sweaters & Hoodies' | 'Cooling' | 'Boots' | 'Harnesses' | 'Travel' | 'Outdoor';
   rating: number;
   reviewCount: number;
   imageUrl: string;
@@ -85,10 +85,12 @@ export interface FitFormData {
   breed: string;
   age: number;
   gender: 'Male' | 'Female';
-  weight: number;
-  chestSize: number;
-  neckSize: number;
-  backLength: number;
+  weight?: number;
+  chestSize?: number;
+  neckSize?: number;
+  backLength?: number;
+  pawWidth?: number;
+  pawLength?: number;
 }
 
 export interface BlackFridayData {

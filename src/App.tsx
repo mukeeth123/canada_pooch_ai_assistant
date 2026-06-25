@@ -10,6 +10,8 @@ import { ReturnRiskPredictor } from './pages/ReturnRiskPredictor';
 import { UserInteractions } from './pages/UserInteractions';
 import { FutureRoadmap } from './pages/FutureRoadmap';
 
+import { ExecutiveROI } from './pages/ExecutiveROI';
+
 export default function App() {
   return (
     <AppProvider>
@@ -24,6 +26,7 @@ export default function App() {
             <Route path="/return-risk" element={<ReturnRiskPredictor />} />
             <Route path="/interactions" element={<UserInteractions />} />
             <Route path="/roadmap" element={<FutureRoadmap />} />
+            <Route path="/roi-dashboard" element={<ExecutiveROI />} />
           </Routes>
         </Layout>
       </BrowserRouter>
