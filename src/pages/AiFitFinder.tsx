@@ -137,7 +137,6 @@ export function AiFitFinder() {
           setValue('pawWidth', jitter(6, 1));
           setValue('pawLength', jitter(7, 1));
           
-          setDetectedBreed(mockBreed);
           setPhotoConfidence(est.confidence + (type === 'video' ? 2 : 0)); // Video gets slight confidence bump
           
           if (type === 'photo') {
