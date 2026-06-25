@@ -14,10 +14,8 @@ const navItems = [
   { to: '/why-this-size', label: 'Why This Size', icon: Info },
   { to: '/fit-visualization', label: 'Fit View', icon: Eye },
   { to: '/recommendations', label: 'Products', icon: ShoppingBag },
-  { to: '/return-risk', label: 'Return Risk', icon: AlertTriangle },
   { to: '/interactions', label: 'Interactions', icon: Activity },
   { to: '/roadmap', label: 'Roadmap', icon: Map },
-  { to: '/roi-dashboard', label: 'ROI Dashboard', icon: TrendingUp },
 ];
 
 export function Navbar() {

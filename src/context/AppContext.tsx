@@ -10,11 +10,15 @@ type Action =
   | { type: 'TOGGLE_COMPARE'; payload: string }
   | { type: 'ADD_NOTIFICATION'; payload: AppNotification }
   | { type: 'MARK_NOTIFICATION_READ'; payload: string }
-  | { type: 'CLEAR_NOTIFICATIONS' };
+  | { type: 'CLEAR_NOTIFICATIONS' }
+  | { type: 'SET_USER_DOG_IMAGE'; payload: string | null }
+  | { type: 'SET_DOG_PROFILE'; payload: 'dog1' | 'dog2' };
 
 const initialState: AppState = {
   fitFormData: null,
   recommendation: null,
+  userDogImage: null,
+  selectedDogProfile: 'dog1',
   darkMode: false,
   wishlist: [],
   compareList: [],
@@ -93,6 +97,10 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, fitFormData: action.payload };
     case 'SET_RECOMMENDATION':
       return { ...state, recommendation: action.payload };
+    case 'SET_USER_DOG_IMAGE':
+      return { ...state, userDogImage: action.payload };
+    case 'SET_DOG_PROFILE':
+      return { ...state, selectedDogProfile: action.payload };
     case 'TOGGLE_DARK_MODE':
       return { ...state, darkMode: !state.darkMode };
     case 'TOGGLE_WISHLIST':

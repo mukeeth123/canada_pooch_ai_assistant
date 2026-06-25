@@ -10,7 +10,10 @@ import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { Modal } from '../components/ui/Modal';
 import { PRODUCTS, OUTERWEAR_CATEGORIES, GEAR_CATEGORIES } from '../mock/products';
+import { PRODUCTS_DOG2 } from '../mock/products_dog2';
 import { BREED_PORTRAITS } from '../mock/tryon';
+import DogImage from '../assets/dog/DOG.png';
+import DoggImage from '../assets/dog2/DOGG.png';
 import type { Product } from '../types';
 import { cn } from '../components/ui/cn';
 
@@ -19,7 +22,7 @@ const OUTERWEAR_LIST = [...OUTERWEAR_CATEGORIES] as string[];
 const GEAR_LIST      = [...GEAR_CATEGORIES] as string[];
 
 function FilterChip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
-  const count = label === 'All' ? PRODUCTS.length : PRODUCTS.filter(p => p.category === label).length;
+  const count = label === 'All Coats' ? PRODUCTS.filter(p => p.category !== 'Boots & Shoes' && p.category !== 'Harnesses').length : PRODUCTS.filter(p => p.category === label).length;
   return (
     <motion.button
       whileTap={{ scale: 0.95 }}
@@ -63,7 +66,7 @@ function CategoryBadge({ category }: { category: string }) {
 function ProductCard({ product, onOpen, onTryOn, wishlist, onWishlist, compare, onCompare }: {
   product: Product;
   onOpen: (p: Product) => void;
-  onTryOn: (p: Product) => void;
+  onTryOn: (data: { product: Product; activeImage?: string }) => void;
   wishlist: boolean;
   onWishlist: () => void;
   compare: boolean;
@@ -81,7 +84,7 @@ function ProductCard({ product, onOpen, onTryOn, wishlist, onWishlist, compare, 
         <img
           src={product.imageUrl}
           alt={`${product.name} — dog wearing Canada Pooch suit`}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 bg-white"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
 
@@ -135,6 +138,7 @@ function ProductCard({ product, onOpen, onTryOn, wishlist, onWishlist, compare, 
           <h3 className="font-bold text-slate-900 dark:text-white text-sm leading-tight">{product.name}</h3>
           <span className="text-black dark:text-white font-black text-base flex-shrink-0">${product.price}</span>
         </div>
+
         <div className="flex items-center gap-2 mb-2">
           <StarRating rating={product.rating} />
           <span className="text-xs text-slate-400">({product.reviewCount.toLocaleString()})</span>
@@ -148,7 +152,7 @@ function ProductCard({ product, onOpen, onTryOn, wishlist, onWishlist, compare, 
             View Details
           </Button>
           <button
-            onClick={() => onTryOn(product)}
+            onClick={() => onTryOn({ product, activeImage: product.colors?.[0]?.image || product.imageUrl })}
             title="Virtual Try-On"
             className="flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 hover:bg-neutral-900 hover:text-white hover:border-neutral-900 text-neutral-700 dark:text-neutral-300 text-xs font-bold uppercase tracking-wide transition-all"
           >
@@ -162,12 +166,12 @@ function ProductCard({ product, onOpen, onTryOn, wishlist, onWishlist, compare, 
 }
 
 // ── Virtual Try-On Modal ─────────────────────────────────────────────────────
-function TryOnModal({ product, breed, onClose }: { product: Product; breed: string; onClose: () => void }) {
+function TryOnModal({ product, activeImage, breed, userImage, onClose }: { product: Product; activeImage?: string; breed: string; userImage?: string | null; onClose: () => void }) {
   const [loading, setLoading] = useState(true);
   const [viewIdx, setViewIdx] = useState(0);
 
-  const views = [{ label: 'Wearing Product', url: product.imageUrl, crop: 'center' }];
-  const breedPortrait = BREED_PORTRAITS[breed] ?? BREED_PORTRAITS['Golden Retriever'];
+  const views = [{ label: 'Wearing Product', url: activeImage || product.imageUrl, crop: 'center' }];
+  const breedPortrait = userImage || DogImage;
 
   // simulate 2s AI generation
   useState(() => { setTimeout(() => setLoading(false), 2000); });
@@ -283,15 +287,15 @@ function TryOnModal({ product, breed, onClose }: { product: Product; breed: stri
 
             {/* View dots */}
             {views.length > 1 && (
-              <div className="flex justify-center gap-1.5">
-                {views.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setViewIdx(i)}
-                    className={cn('rounded-full transition-all', i === viewIdx ? 'w-5 h-2 bg-black dark:bg-white' : 'w-2 h-2 bg-neutral-200 dark:bg-neutral-700')}
-                  />
-                ))}
-              </div>
+               <div className="flex justify-center gap-1.5">
+                 {views.map((_, i) => (
+                   <button
+                     key={i}
+                     onClick={() => setViewIdx(i)}
+                     className={cn('rounded-full transition-all', i === viewIdx ? 'w-5 h-2 bg-black dark:bg-white' : 'w-2 h-2 bg-neutral-200 dark:bg-neutral-700')}
+                   />
+                 ))}
+               </div>
             )}
 
             {/* Fit notes */}
@@ -316,22 +320,76 @@ function TryOnModal({ product, breed, onClose }: { product: Product; breed: stri
 // ── main page ────────────────────────────────────────────────────────────────
 export function ProductRecommendations() {
   const { state, dispatch } = useApp();
-  const [filter, setFilter] = useState<string>('All');
-  const [selected, setSelected] = useState<Product | null>(null);
-  const [tryOnProduct, setTryOnProduct] = useState<Product | null>(null);
+  const [hasSelectedDog, setHasSelectedDog] = useState(false);
+  const [filter, setFilter] = useState<string>('All Coats');
+  
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [modalColorIdx, setModalColorIdx] = useState(0);
+
+  const [tryOnData, setTryOnData] = useState<{ product: Product; activeImage?: string } | null>(null);
   const rec = state.recommendation;
   const breed = state.fitFormData?.breed ?? 'Golden Retriever';
 
-  const filtered = filter === 'All' ? PRODUCTS : PRODUCTS.filter(p => p.category === filter);
+  const productSource = state.selectedDogProfile === 'dog2' ? PRODUCTS_DOG2 : PRODUCTS;
+  const filtered = filter === 'All Coats' ? productSource.filter(p => p.category !== 'Boots & Shoes' && p.category !== 'Harnesses') : productSource.filter(p => p.category === filter);
+
+  if (!hasSelectedDog) {
+    return (
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-20 flex flex-col items-center justify-center min-h-[60vh]">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-lg w-full">
+          <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Camera className="w-10 h-10" />
+          </div>
+          <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-4">Choose a Dog Profile</h2>
+          <p className="text-slate-500 dark:text-slate-400 mb-8">
+            Please select which dog profile you'd like to view recommendations for before proceeding.
+          </p>
+          <div className="grid grid-cols-2 gap-4">
+            <button
+              onClick={() => {
+                dispatch({ type: 'SET_DOG_PROFILE', payload: 'dog1' });
+                setHasSelectedDog(true);
+              }}
+              className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-emerald-500 rounded-2xl p-6 transition-all group"
+            >
+              <div className="w-24 h-24 mx-auto bg-slate-100 dark:bg-slate-700 rounded-full mb-4 overflow-hidden group-hover:scale-105 transition-transform">
+                <img src={DogImage} alt="Dog 1" className="w-full h-full object-cover" />
+              </div>
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white">Dog 1</h3>
+              <p className="text-xs text-slate-500 mt-1">Default dataset</p>
+            </button>
+            <button
+              onClick={() => {
+                dispatch({ type: 'SET_DOG_PROFILE', payload: 'dog2' });
+                setHasSelectedDog(true);
+              }}
+              className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-emerald-500 rounded-2xl p-6 transition-all group"
+            >
+              <div className="w-24 h-24 mx-auto bg-slate-100 dark:bg-slate-700 rounded-full mb-4 overflow-hidden group-hover:scale-105 transition-transform">
+                <img src={DoggImage} alt="Dog 2" className="w-full h-full object-cover" />
+              </div>
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white">Dog 2</h3>
+              <p className="text-xs text-slate-500 mt-1">New dataset</p>
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-8">
-      <PageHeader
-        icon={ShoppingBag}
-        badge="AI Recommendations"
-        title="Perfect Products for Your Dog"
-        subtitle={rec ? `Curated for ${state.fitFormData?.dogName} (${rec.recommendedSize}) — sorted by AI fit score` : 'Browse all products by season or activity'}
-      />
+      <div className="flex items-center justify-between mb-6">
+        <PageHeader
+          icon={ShoppingBag}
+          badge="AI Recommendations"
+          title="Perfect Products for Your Dog"
+          subtitle={rec ? `Curated for ${state.fitFormData?.dogName} (${rec.recommendedSize}) — sorted by AI fit score` : 'Browse all products by season or activity'}
+        />
+        <Button variant="outline" size="sm" onClick={() => setHasSelectedDog(false)}>
+          Change Dog
+        </Button>
+      </div>
 
       {/* Hero Banner */}
       <motion.div
@@ -359,11 +417,15 @@ export function ProductRecommendations() {
         </div>
       </motion.div>
 
+
+
       {/* ── Filters ─────────────────────────────────────────────────────── */}
       <div className="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700/50 p-4 mb-6 shadow-card">
         {/* All */}
-        <div className="flex items-center gap-2 mb-3">
-          <FilterChip label="All" active={filter === 'All'} onClick={() => setFilter('All')} />
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          <FilterChip label="All Coats" active={filter === 'All Coats'} onClick={() => setFilter('All Coats')} />
+          <FilterChip label="Boots Only" active={filter === 'Boots & Shoes'} onClick={() => setFilter('Boots & Shoes')} />
+          <FilterChip label="Harnesses Only" active={filter === 'Harnesses'} onClick={() => setFilter('Harnesses')} />
         </div>
 
         {/* Outerwear row */}
@@ -391,11 +453,11 @@ export function ProductRecommendations() {
       <div className="flex items-center justify-between mb-4">
         <p className="text-sm text-slate-500 dark:text-slate-400">
           Showing <span className="font-bold text-slate-700 dark:text-slate-200">{filtered.length}</span> products
-          {filter !== 'All' && <> in <span className="font-bold">{filter}</span></>}
+          {filter !== 'All Coats' && <> in <span className="font-bold">{filter}</span></>}
         </p>
-        {filter !== 'All' && (
+        {filter !== 'All Coats' && (
           <button
-            onClick={() => setFilter('All')}
+            onClick={() => setFilter('All Coats')}
             className="text-xs text-black dark:text-white font-semibold hover:underline"
           >
             Clear filter
@@ -410,8 +472,11 @@ export function ProductRecommendations() {
             <motion.div key={product.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ delay: i * 0.04 }}>
               <ProductCard
                 product={product}
-                onOpen={setSelected}
-                onTryOn={setTryOnProduct}
+                onOpen={(p) => {
+                  setSelectedProduct(p);
+                  setModalColorIdx(0);
+                }}
+                onTryOn={setTryOnData}
                 wishlist={state.wishlist.includes(product.id)}
                 onWishlist={() => dispatch({ type: 'TOGGLE_WISHLIST', payload: product.id })}
                 compare={state.compareList.includes(product.id)}
@@ -423,34 +488,55 @@ export function ProductRecommendations() {
       </div>
 
       {/* Product Modal */}
-      <Modal open={!!selected} onClose={() => setSelected(null)} title={selected?.name} maxWidth="xl">
-        {selected && (
+      <Modal open={!!selectedProduct} onClose={() => setSelectedProduct(null)} title={selectedProduct?.name} maxWidth="xl">
+        {selectedProduct && (
           <div>
-            <div className="h-64 sm:h-72 overflow-hidden relative">
-              <img src={selected.imageUrl} alt={`${selected.name} — dog wearing suit`} className="w-full h-full object-cover" />
+            <div className="h-64 sm:h-72 overflow-hidden relative bg-white">
+              <img src={selectedProduct.colors?.[modalColorIdx]?.image || selectedProduct.imageUrl} alt={`${selectedProduct.name}`} className="w-full h-full object-contain" />
               <div className="absolute bottom-3 left-3">
-                <CategoryBadge category={selected.category} />
+                <CategoryBadge category={selectedProduct.category} />
               </div>
             </div>
             <div className="p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <StarRating rating={selected.rating} />
-                    <span className="text-sm text-slate-500">({selected.reviewCount.toLocaleString()} reviews)</span>
+                    <StarRating rating={selectedProduct.rating} />
+                    <span className="text-sm text-slate-500">({selectedProduct.reviewCount.toLocaleString()} reviews)</span>
                   </div>
-                  {selected.badge && <Badge variant="default">{selected.badge}</Badge>}
+                  {selectedProduct.badge && <Badge variant="default">{selectedProduct.badge}</Badge>}
                 </div>
-                <span className="text-3xl font-black text-black dark:text-white">${selected.price}</span>
+                <span className="text-3xl font-black text-black dark:text-white">${selectedProduct.price}</span>
               </div>
 
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm">{selected.description}</p>
+              {/* Color Swatches inside Modal */}
+              {selectedProduct.colors && selectedProduct.colors.length > 0 && (
+                <div>
+                  <p className="text-xs font-bold text-slate-500 mb-2">Available Colors</p>
+                  <div className="flex items-center gap-2">
+                    {selectedProduct.colors.map((color, idx) => (
+                      <button
+                        key={color.name}
+                        title={color.name}
+                        onClick={() => setModalColorIdx(idx)}
+                        className={cn(
+                          'w-6 h-6 rounded-full border border-neutral-200 shadow-sm transition-all',
+                          modalColorIdx === idx ? 'ring-2 ring-black dark:ring-white ring-offset-2 dark:ring-offset-slate-900' : 'opacity-70 hover:opacity-100 hover:scale-110'
+                        )}
+                        style={{ backgroundColor: color.hex }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm">{selectedProduct.description}</p>
 
               {/* Breed tags */}
               <div>
                 <p className="text-xs font-bold text-slate-500 mb-2">Best for breeds</p>
                 <div className="flex flex-wrap gap-2">
-                  {selected.recommendedFor.map(b => (
+                  {selectedProduct.recommendedFor.map(b => (
                     <span key={b} className="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300">
                       🐾 {b}
                     </span>
@@ -460,7 +546,7 @@ export function ProductRecommendations() {
 
               <div className="p-4 rounded-2xl bg-neutral-100 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800/40">
                 <p className="text-xs font-bold text-black dark:text-neutral-400 mb-1">🤖 AI Recommendation Reason</p>
-                <p className="text-sm text-black dark:text-neutral-300">{selected.recommendationReason}</p>
+                <p className="text-sm text-black dark:text-neutral-300">{selectedProduct.recommendationReason}</p>
                 {rec && (
                   <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black text-white text-xs font-bold">
                     <Check className="w-3 h-3" /> Recommended Size: {rec.recommendedSize}
@@ -471,7 +557,7 @@ export function ProductRecommendations() {
               <div>
                 <p className="text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Available Sizes</p>
                 <div className="flex flex-wrap gap-2">
-                  {selected.sizes.map(s => (
+                  {selectedProduct.sizes.map(s => (
                     <span key={s} className={cn(
                       'px-3 py-1.5 rounded-xl border text-sm font-bold transition-all',
                       rec?.recommendedSize === s
@@ -486,15 +572,18 @@ export function ProductRecommendations() {
 
               <div className="flex gap-3">
                 <Button
-                  variant={state.wishlist.includes(selected.id) ? 'danger' : 'secondary'}
+                  variant={state.wishlist.includes(selectedProduct.id) ? 'danger' : 'secondary'}
                   size="md"
-                  onClick={() => dispatch({ type: 'TOGGLE_WISHLIST', payload: selected.id })}
+                  onClick={() => dispatch({ type: 'TOGGLE_WISHLIST', payload: selectedProduct.id })}
                 >
                   <Heart className="w-4 h-4" />
-                  {state.wishlist.includes(selected.id) ? 'Remove' : 'Wishlist'}
+                  {state.wishlist.includes(selectedProduct.id) ? 'Remove' : 'Wishlist'}
                 </Button>
-                <Button variant="gradient" size="md" className="flex-1">
-                  Add to Cart — ${selected.price}
+                <Button variant="gradient" size="md" className="flex-1" onClick={() => {
+                  setSelectedProduct(null);
+                  setTryOnData({ product: selectedProduct, activeImage: selectedProduct.colors?.[modalColorIdx]?.image || selectedProduct.imageUrl });
+                }}>
+                  <Camera className="w-4 h-4" /> Try It
                 </Button>
               </div>
             </div>
@@ -504,11 +593,13 @@ export function ProductRecommendations() {
 
       {/* Virtual Try-On */}
       <AnimatePresence>
-        {tryOnProduct && (
+        {tryOnData && (
           <TryOnModal
-            product={tryOnProduct}
+            product={tryOnData.product}
+            activeImage={tryOnData.activeImage}
             breed={breed}
-            onClose={() => setTryOnProduct(null)}
+            userImage={state.selectedDogProfile === 'dog2' ? DoggImage : state.userDogImage}
+            onClose={() => setTryOnData(null)}
           />
         )}
       </AnimatePresence>

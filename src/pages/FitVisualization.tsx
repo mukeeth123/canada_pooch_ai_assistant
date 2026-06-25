@@ -7,6 +7,8 @@ import { PageHeader } from '../components/layout/PageHeader';
 import { Card, CardContent, CardHeader } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { ProgressBar } from '../components/ui/ProgressBar';
+import DogImage from '../assets/dog/DOG.png';
+import DoggImage from '../assets/dog2/DOGG.png';
 
 function getZoneColor(score: number) {
   if (score >= 85) return { fill: '#22C55E', stroke: '#16A34A', light: '#DCFCE7', label: 'Ideal' };
@@ -19,10 +21,12 @@ function DogSVG({
   chestScore,
   neckScore,
   bodyScore,
+  userImage,
 }: {
   chestScore: number;
   neckScore: number;
   bodyScore: number;
+  userImage?: string | null;
 }) {
   const neck = getZoneColor(neckScore);
   const chest = getZoneColor(chestScore);
@@ -70,40 +74,7 @@ function DogSVG({
         className="w-full"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <defs>
-          <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#F1F5F9" />
-            <stop offset="100%" stopColor="#E2E8F0" />
-          </linearGradient>
-          <linearGradient id="earGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#FDE68A" />
-            <stop offset="100%" stopColor="#FCD34D" />
-          </linearGradient>
-        </defs>
-
-        {/* ── TAIL (back-right) ── */}
-        <motion.path
-          d="M 385 165 C 430 140 450 100 435 75 C 425 60 410 70 415 88 C 418 100 408 115 390 130"
-          fill="none"
-          stroke="#CBD5E1"
-          strokeWidth="14"
-          strokeLinecap="round"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ delay: 0.8, duration: 0.6 }}
-        />
-
-        {/* ── MAIN BODY ── */}
-        <motion.ellipse
-          cx="248" cy="185" rx="138" ry="72"
-          fill="url(#bodyGrad)"
-          stroke="#CBD5E1"
-          strokeWidth="2"
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          style={{ transformOrigin: '248px 185px' }}
-        />
+        <image href={userImage || DogImage} x="0" y="0" width="480" height="320" preserveAspectRatio="contain" />
 
         {/* ── BODY FIT ZONE OVERLAY ── */}
         <motion.ellipse
@@ -118,70 +89,18 @@ function DogSVG({
           transition={{ delay: 0.6 }}
         />
 
-        {/* ── NECK ── */}
-        <motion.path
-          d="M 148 148 C 140 130 142 115 148 108 C 155 100 175 100 180 108 C 186 118 182 138 175 148 Z"
+        {/* ── NECK ZONE OVERLAY ── */}
+        <motion.ellipse
+          cx="162" cy="130" rx="30" ry="40"
           fill={neck.fill}
           fillOpacity={0.18}
           stroke={neck.stroke}
-          strokeWidth="2"
+          strokeWidth="2.5"
+          strokeDasharray="6 3"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         />
-        {/* Neck base connector */}
-        <path
-          d="M 148 148 Q 162 155 175 148"
-          fill="none"
-          stroke="#CBD5E1"
-          strokeWidth="3"
-        />
-
-        {/* ── HEAD ── */}
-        <motion.ellipse
-          cx="115" cy="108" rx="58" ry="52"
-          fill="#F8FAFC"
-          stroke="#CBD5E1"
-          strokeWidth="2.5"
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 0.5 }}
-          style={{ transformOrigin: '115px 108px' }}
-        />
-
-        {/* ── FLOPPY EAR ── */}
-        <motion.path
-          d="M 88 70 C 62 55 48 80 52 108 C 55 128 74 138 88 132 C 80 118 78 95 88 70 Z"
-          fill="url(#earGrad)"
-          stroke="#F59E0B"
-          strokeWidth="1.5"
-          initial={{ rotate: -20, opacity: 0 }}
-          animate={{ rotate: 0, opacity: 1 }}
-          transition={{ delay: 0.2, type: 'spring', stiffness: 120 }}
-          style={{ transformOrigin: '88px 90px' }}
-        />
-
-        {/* ── SNOUT ── */}
-        <motion.ellipse
-          cx="82" cy="118" rx="28" ry="18"
-          fill="#F1F5F9"
-          stroke="#CBD5E1"
-          strokeWidth="2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-        />
-        {/* Nose */}
-        <ellipse cx="66" cy="116" rx="8" ry="6" fill="#1E293B" />
-        <ellipse cx="65" cy="114" rx="2.5" ry="2" fill="rgba(255,255,255,0.5)" />
-        {/* Mouth */}
-        <path d="M 70 122 Q 78 128 86 122" fill="none" stroke="#94A3B8" strokeWidth="1.8" strokeLinecap="round" />
-
-        {/* ── EYE ── */}
-        <circle cx="108" cy="98" r="9" fill="#1E293B" />
-        <circle cx="110" cy="95" r="3" fill="rgba(255,255,255,0.7)" />
-        {/* Eyebrow */}
-        <path d="M 100 88 Q 108 84 116 87" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" />
 
         {/* ── CHEST ZONE OVERLAY ── */}
         <motion.ellipse
@@ -195,47 +114,6 @@ function DogSVG({
           animate={{ opacity: 1 }}
           transition={{ delay: 0.7 }}
         />
-
-        {/* ── FRONT LEGS ── */}
-        <motion.rect
-          x="148" y="248" width="22" height="56" rx="11"
-          fill="#E2E8F0" stroke="#CBD5E1" strokeWidth="1.5"
-          initial={{ scaleY: 0 }}
-          animate={{ scaleY: 1 }}
-          transition={{ delay: 0.9, duration: 0.4 }}
-          style={{ transformOrigin: '159px 248px' }}
-        />
-        <motion.rect
-          x="176" y="248" width="22" height="56" rx="11"
-          fill="#E2E8F0" stroke="#CBD5E1" strokeWidth="1.5"
-          initial={{ scaleY: 0 }}
-          animate={{ scaleY: 1 }}
-          transition={{ delay: 1.0, duration: 0.4 }}
-          style={{ transformOrigin: '187px 248px' }}
-        />
-        {/* Paws */}
-        <ellipse cx="159" cy="304" rx="13" ry="7" fill="#CBD5E1" />
-        <ellipse cx="187" cy="304" rx="13" ry="7" fill="#CBD5E1" />
-
-        {/* ── BACK LEGS ── */}
-        <motion.rect
-          x="308" y="240" width="24" height="64" rx="12"
-          fill="#E2E8F0" stroke="#CBD5E1" strokeWidth="1.5"
-          initial={{ scaleY: 0 }}
-          animate={{ scaleY: 1 }}
-          transition={{ delay: 1.1, duration: 0.4 }}
-          style={{ transformOrigin: '320px 240px' }}
-        />
-        <motion.rect
-          x="338" y="240" width="24" height="64" rx="12"
-          fill="#E2E8F0" stroke="#CBD5E1" strokeWidth="1.5"
-          initial={{ scaleY: 0 }}
-          animate={{ scaleY: 1 }}
-          transition={{ delay: 1.2, duration: 0.4 }}
-          style={{ transformOrigin: '350px 240px' }}
-        />
-        <ellipse cx="320" cy="304" rx="14" ry="7" fill="#CBD5E1" />
-        <ellipse cx="350" cy="304" rx="14" ry="7" fill="#CBD5E1" />
 
         {/* ── CONNECTOR LINES to labels (dotted callouts) ── */}
         {/* Neck callout */}
@@ -413,6 +291,7 @@ export function FitVisualization() {
                 chestScore={rec.chestMatch}
                 neckScore={rec.neckMatch}
                 bodyScore={rec.backMatch}
+                userImage={state.selectedDogProfile === 'dog2' ? DoggImage : state.userDogImage}
               />
             </CardContent>
           </Card>
@@ -477,11 +356,6 @@ export function FitVisualization() {
         <Link to="/recommendations" className="flex-1">
           <Button variant="gradient" size="lg" className="w-full">
             See AI Recommendations <ArrowRight className="w-4 h-4" />
-          </Button>
-        </Link>
-        <Link to="/return-risk" className="flex-1">
-          <Button variant="outline" size="lg" className="w-full">
-            Check Return Risk
           </Button>
         </Link>
       </div>

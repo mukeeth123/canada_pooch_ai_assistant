@@ -1,7 +1,12 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CheckCircle, Zap, Shield, TrendingUp, Star, ChevronDown } from 'lucide-react';
+import { ArrowRight, CheckCircle, Zap, Shield, TrendingUp, Star, ChevronDown, Camera, Ruler, SlidersHorizontal, Palette, Sparkles } from 'lucide-react';
 import { Button } from '../components/ui/Button';
+
+import DogBase from '../assets/dog/DOG.png';
+import Coat1 from '../assets/dog/Coat_1/Full_1.png';
+import CoatPink from '../assets/dog/Coat_1/Pink_3.png';
+import CoatBlue from '../assets/dog/Coat_1/Blue_1.png';
 
 const kpis = [
   { value: '95%', label: 'Fit Accuracy', color: 'text-white' },
@@ -12,46 +17,71 @@ const kpis = [
 
 const features = [
   {
-    icon: Zap,
-    title: 'AI-Powered Sizing',
-    desc: 'Breed-specific algorithms trained on 14,000+ real sizing outcomes deliver 95% accuracy.',
-    color: 'bg-black',
-  },
-  {
-    icon: Shield,
-    title: 'Return Risk Prediction',
-    desc: 'Know the probability of a return before purchase and offer the optimal alternative.',
-    color: 'bg-neutral-700',
-  },
-  {
-    icon: TrendingUp,
-    title: 'Revenue Intelligence',
-    desc: '$147K annual savings with 716% ROI. Payback in under 6 weeks.',
+    icon: Camera,
+    title: 'Photo & Video Upload',
+    desc: 'Simply snap a photo or upload a quick video. Our AI instantly analyzes your dog\'s proportions and breed characteristics.',
     color: 'bg-emerald-500',
+  },
+  {
+    icon: Ruler,
+    title: 'Manual Sizing Entry',
+    desc: 'Prefer exact numbers? Manually enter your dog\'s chest, neck, back, and weight for pinpoint fit recommendations.',
+    color: 'bg-blue-500',
+  },
+  {
+    icon: SlidersHorizontal,
+    title: 'Advanced Filtering',
+    desc: 'Effortlessly filter recommendations by coats, boots, harnesses, and specific sub-categories tailored for your dog.',
+    color: 'bg-amber-500',
+  },
+  {
+    icon: Palette,
+    title: 'Dynamic Color Variants',
+    desc: 'Quickly toggle between different colors and styles for any product and see the high-quality imagery update instantly.',
+    color: 'bg-purple-500',
+  },
+  {
+    icon: Sparkles,
+    title: 'AI Virtual Try-On',
+    desc: 'Take the guesswork out of shopping. See exactly how the gear looks on your dog before you add it to the cart.',
+    color: 'bg-rose-500',
+  },
+  {
+    icon: Zap,
+    title: '95% Fit Accuracy Engine',
+    desc: 'Our proprietary algorithm cross-references 14,000+ real outcomes to deliver the exact size your dog needs.',
+    color: 'bg-black',
   },
 ];
 
 const workflowSteps = [
   {
     num: '01',
-    title: 'AI Photo Upload & Analysis',
-    desc: 'Skip the measuring tape. Simply upload a photo of your dog, and our AI instantly detects the breed, estimates key proportions (including paw size for boots), and builds a complete profile in seconds.',
-    img: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=800&q=80',
+    title: 'Photo, Video & Manual Sizing',
+    desc: 'Skip the measuring tape—simply upload a photo or video of your dog for instant AI analysis. Prefer exact numbers? You can also enter manual measurements to build a complete profile in seconds.',
+    img: DogBase,
     tag: 'Fit Finder'
   },
   {
     num: '02',
-    title: 'Personalized Product Recommendations',
-    desc: 'Browse a curated collection of outerwear, gear, and boots perfectly sized for your dog. Our engine cross-references 14,000+ real fit outcomes to deliver a 95% accurate size prediction with a clear "Why This Size" explanation.',
-    img: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=80',
+    title: 'Smart Recommendations & Filtering',
+    desc: 'Browse a curated collection of outerwear, gear, and boots. Use our advanced filters to narrow down categories and instantly see which products have the highest fit accuracy for your dog.',
+    img: Coat1,
     tag: 'Smart Shopping'
   },
   {
     num: '03',
-    title: 'Virtual Try-On Experience',
-    desc: 'Curious how it looks? Click "Try" on any product to see an instant AI-generated preview of your dog\'s breed wearing the exact gear. Buy with absolute confidence.',
-    img: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800&q=80',
+    title: 'Virtual Try-On & Color Swap',
+    desc: 'Found a style you like? Toggle through different color variants and click "Try" to see an AI-generated preview of your dog wearing the exact gear. Buy with absolute confidence.',
+    img: CoatPink,
     tag: 'Confidence'
+  },
+  {
+    num: '04',
+    title: 'Perfect Fit Delivery',
+    desc: 'Receive gear that fits flawlessly on the first try. Say goodbye to returns and hello to adventure with boots, coats, and harnesses that feel custom-made.',
+    img: CoatBlue,
+    tag: 'Happy Dogs'
   },
 ];
 
@@ -144,7 +174,7 @@ export function Landing() {
               className="flex flex-col sm:flex-row gap-3 mt-8"
             >
               <Link to="/fit-finder">
-                <Button size="lg" variant="gradient" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white border-0 shadow-xl shadow-emerald-900/20">
                   Find My Dog's Perfect Fit
                   <ArrowRight className="w-4 h-4" />
                 </Button>
@@ -215,10 +245,10 @@ export function Landing() {
               <Zap className="w-3 h-3" /> Enterprise Capabilities
             </div>
             <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white">
-              AI intelligence built for <span className="text-gradient">modern commerce</span>
+              Everything you need for the <span className="text-gradient">perfect fit</span>
             </h2>
             <p className="mt-4 text-slate-500 dark:text-slate-400">
-              Not just a size chart. A full fit intelligence platform that drives measurable revenue outcomes.
+              Multiple ways to measure, advanced filtering, and immersive product exploration built specifically for dogs.
             </p>
           </motion.div>
           <div className="grid md:grid-cols-3 gap-6">
@@ -271,39 +301,47 @@ export function Landing() {
 
       {/* Complete Workflow */}
       <section className="py-20 sm:py-28 bg-white dark:bg-slate-900 overflow-hidden">
-        <div className="max-w-screen-xl mx-auto px-4 sm:px-6">
+          <div className="max-w-screen-xl mx-auto px-4 sm:px-6">
           <motion.div {...fadeUp()} className="text-center max-w-3xl mx-auto mb-20">
             <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white">The Complete Workflow</h2>
             <p className="mt-4 text-slate-500 dark:text-slate-400 text-lg">From a single photo to the perfect fit. Experience a seamless, intelligent shopping journey designed specifically for dogs.</p>
           </motion.div>
           
-          <div className="space-y-24 lg:space-y-32">
-            {workflowSteps.map((step, i) => (
-              <div key={step.num} className={`flex flex-col gap-10 lg:gap-20 items-center ${i % 2 !== 0 ? 'lg:flex-row-reverse' : 'lg:flex-row'}`}>
-                {/* Text Content */}
-                <div className="flex-1 space-y-6">
-                  <motion.div {...fadeUp()} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold uppercase tracking-wider">
-                    Step {step.num} <span className="w-1 h-1 rounded-full bg-slate-400"></span> {step.tag}
-                  </motion.div>
-                  <motion.h3 {...fadeUp(0.1)} className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white leading-tight">
-                    {step.title}
-                  </motion.h3>
-                  <motion.p {...fadeUp(0.2)} className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
-                    {step.desc}
-                  </motion.p>
-                </div>
-                
-                {/* Visual Content */}
-                <motion.div {...fadeUp(0.3)} className="flex-1 w-full relative">
-                  <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-slate-200/50 dark:shadow-black/50 aspect-[4/3] bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/50 group">
-                    <img src={step.img} alt={step.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent" />
+          <div className="relative max-w-5xl mx-auto">
+            {/* The vertical line */}
+            <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-emerald-500/20 via-emerald-500 to-transparent md:-translate-x-1/2 hidden sm:block rounded-full" />
+
+            <div className="space-y-24 relative">
+              {workflowSteps.map((step, i) => (
+                <div key={step.num} className={`relative flex flex-col md:flex-row gap-8 md:gap-16 items-center ${i % 2 !== 0 ? 'md:flex-row-reverse' : ''}`}>
+                  {/* Timeline dot */}
+                  <div className="hidden sm:flex absolute left-8 md:left-1/2 md:-translate-x-1/2 w-16 h-16 rounded-full bg-slate-900 border-4 border-emerald-500 items-center justify-center z-10 shadow-xl shadow-emerald-900/20">
+                    <span className="text-emerald-500 font-black text-lg">{step.num}</span>
                   </div>
-                  {/* Decorative Elements */}
-                  <div className={`absolute -z-10 w-full h-full blur-3xl opacity-30 rounded-full ${i % 2 === 0 ? '-bottom-10 -right-10 bg-emerald-400' : '-top-10 -left-10 bg-blue-400'}`} />
-                </motion.div>
-              </div>
-            ))}
+
+                  {/* Text Content */}
+                  <div className={`flex-1 w-full space-y-6 sm:pl-24 md:pl-0 ${i % 2 !== 0 ? 'md:text-left' : 'md:text-right'}`}>
+                    <motion.div {...fadeUp()} className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold uppercase tracking-wider shadow-sm ${i % 2 === 0 ? 'md:flex-row-reverse' : ''}`}>
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> {step.tag}
+                    </motion.div>
+                    <motion.h3 {...fadeUp(0.1)} className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white leading-tight">
+                      {step.title}
+                    </motion.h3>
+                    <motion.p {...fadeUp(0.2)} className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
+                      {step.desc}
+                    </motion.p>
+                  </div>
+                  
+                  {/* Visual Content */}
+                  <div className="flex-1 w-full relative group sm:pl-24 md:pl-0">
+                    <motion.div {...fadeUp(0.3)} className="relative rounded-3xl overflow-hidden shadow-2xl shadow-slate-200/50 dark:shadow-black/50 aspect-square md:aspect-[4/3] bg-white dark:bg-neutral-900 border border-slate-200 dark:border-slate-700/50 z-20">
+                      <img src={step.img} alt={step.title} className="w-full h-full object-contain p-4 transition-transform duration-700 group-hover:scale-105" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/10 via-transparent to-transparent pointer-events-none" />
+                    </motion.div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

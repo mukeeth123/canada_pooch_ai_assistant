@@ -4,11 +4,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Ruler, CheckCircle, Loader2, Dog, Camera, Upload, X, Image, Sparkles } from 'lucide-react';
+import { Ruler, CheckCircle, Loader2, Dog, Camera, Upload, X, Image, Sparkles, Video, ArrowLeft, Play } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { PageHeader } from '../components/layout/PageHeader';
 import { Button } from '../components/ui/Button';
-import { Card, CardContent } from '../components/ui/Card';
+import { Card, CardContent, CardHeader } from '../components/ui/Card';
 import type { FitFormData } from '../types';
 import { BREED_NAMES } from '../mock/breeds';
 import { BREED_ESTIMATES, DEFAULT_ESTIMATE } from '../mock/tryon';
@@ -37,34 +37,58 @@ const PROCESSING_STEPS = [
 ];
 
 const PHOTO_STEPS = [
-  { label: 'Detecting dog in photo...', icon: '🐾' },
-  { label: 'Identifying breed characteristics...', icon: '🔍' },
+  { label: 'Detecting dog in photos...', icon: '🐾' },
+  { label: 'Cross-referencing multi-view angles...', icon: '📸' },
   { label: 'Estimating body measurements...', icon: '📏' },
   { label: 'Calculating size from proportions...', icon: '🤖' },
   { label: 'Confidence score ready!', icon: '✅' },
 ];
 
+const VIDEO_STEPS = [
+  { label: 'Extracting keyframes from video...', icon: '🎞️' },
+  { label: 'Analyzing 3D geometry & motion...', icon: '📐' },
+  { label: 'Detecting breed profile...', icon: '🐕' },
+  { label: 'Mapping full-body proportions...', icon: '📏' },
+  { label: 'Confidence score ready!', icon: '✅' },
+];
+
+const PHOTO_VIEWS = [
+  { id: 'front', label: 'Front View', desc: 'Face and chest clearly visible' },
+  { id: 'side', label: 'Side View', desc: 'Full length from nose to tail' },
+  { id: 'top', label: 'Top View', desc: 'Looking down at the back' }
+] as const;
+
 export function AiFitFinder() {
-  const { state, submitFitForm } = useApp();
+  const { state, dispatch, submitFitForm } = useApp();
   const navigate = useNavigate();
 
-  // mode: manual | photo
-  const [mode, setMode] = useState<'manual' | 'photo'>('manual');
+  // mode: selection | manual | photo | video
+  const [mode, setMode] = useState<'selection' | 'manual' | 'photo' | 'video'>('selection');
 
   // photo upload state
-  const [uploadedFiles, setUploadedFiles] = useState<{ file: File; preview: string }[]>([]);
-  const [isDragging, setIsDragging] = useState(false);
+  const [photoSlots, setPhotoSlots] = useState<Record<string, { file: File, preview: string }>>({});
+  const [activeSlot, setActiveSlot] = useState<string | null>(null);
   const [photoAnalyzing, setPhotoAnalyzing] = useState(false);
   const [photoStep, setPhotoStep] = useState(0);
   const [photoComplete, setPhotoComplete] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // video upload state
+  const [uploadedVideo, setUploadedVideo] = useState<{ file: File, preview: string } | null>(null);
+  const [videoAnalyzing, setVideoAnalyzing] = useState(false);
+  const [videoStep, setVideoStep] = useState(0);
+  const [videoComplete, setVideoComplete] = useState(false);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+
+  // common analysis state
   const [detectedBreed, setDetectedBreed] = useState('');
   const [photoConfidence, setPhotoConfidence] = useState(0);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // form submission state
   const [processing, setProcessing] = useState(false);
   const [stepIdx, setStepIdx] = useState(0);
   const [done, setDone] = useState(false);
+  const [editMode, setEditMode] = useState(false);
 
   const { register, handleSubmit, setValue, getValues, watch, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -72,37 +96,15 @@ export function AiFitFinder() {
   });
   const breedValue = watch('breed');
 
-  // ── photo upload handlers ────────────────────────────────────────────────
-  const addFiles = useCallback((files: FileList | null) => {
-    if (!files) return;
-    const newPreviews = Array.from(files)
-      .filter(f => f.type.startsWith('image/'))
-      .slice(0, 5)
-      .map(file => ({ file, preview: URL.createObjectURL(file) }));
-    setUploadedFiles(prev => [...prev, ...newPreviews].slice(0, 5));
-    setPhotoComplete(false);
-  }, []);
+  const runMockAnalysis = (type: 'photo' | 'video') => {
+    if (type === 'photo') {
+      setPhotoAnalyzing(true);
+      setPhotoStep(0);
+    } else {
+      setVideoAnalyzing(true);
+      setVideoStep(0);
+    }
 
-  const removeFile = (idx: number) => {
-    setUploadedFiles(prev => {
-      URL.revokeObjectURL(prev[idx].preview);
-      return prev.filter((_, i) => i !== idx);
-    });
-    setPhotoComplete(false);
-  };
-
-  const onDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    addFiles(e.dataTransfer.files);
-  };
-
-  const runPhotoAnalysis = () => {
-    if (uploadedFiles.length === 0) return;
-    setPhotoAnalyzing(true);
-    setPhotoStep(0);
-
-    // Pick a random breed from common ones or use selected
     const mockBreed = breedValue && BREED_NAMES.includes(breedValue)
       ? breedValue
       : (['Golden Retriever', 'Labrador', 'French Bulldog', 'German Shepherd', 'Husky', 'Poodle'][
@@ -110,16 +112,18 @@ export function AiFitFinder() {
         ]);
 
     let step = 0;
+    const stepsLen = type === 'photo' ? PHOTO_STEPS.length : VIDEO_STEPS.length;
+    
     const iv = setInterval(() => {
       step++;
-      setPhotoStep(step);
-      if (step >= PHOTO_STEPS.length - 1) {
+      if (type === 'photo') setPhotoStep(step);
+      else setVideoStep(step);
+      
+      if (step >= stepsLen - 1) {
         clearInterval(iv);
         setTimeout(() => {
           const est = BREED_ESTIMATES[mockBreed] ?? DEFAULT_ESTIMATE;
-          // auto-fill form with small jitter
-          const jitter = (base: number, range = 3) =>
-            Math.round((base + (Math.random() * range * 2 - range)) * 10) / 10;
+          const jitter = (base: number, range = 3) => Math.round((base + (Math.random() * range * 2 - range)) * 10) / 10;
 
           if (!getValues('dogName')) setValue('dogName', 'My Dog');
           if (!getValues('age')) setValue('age', 3);
@@ -132,10 +136,17 @@ export function AiFitFinder() {
           setValue('backLength', jitter(est.backLength));
           setValue('pawWidth', jitter(6, 1));
           setValue('pawLength', jitter(7, 1));
+          
           setDetectedBreed(mockBreed);
-          setPhotoConfidence(est.confidence);
-          setPhotoAnalyzing(false);
-          setPhotoComplete(true);
+          setPhotoConfidence(est.confidence + (type === 'video' ? 2 : 0)); // Video gets slight confidence bump
+          
+          if (type === 'photo') {
+            setPhotoAnalyzing(false);
+            setPhotoComplete(true);
+          } else {
+            setVideoAnalyzing(false);
+            setVideoComplete(true);
+          }
         }, 600);
       }
     }, 650);
@@ -155,7 +166,10 @@ export function AiFitFinder() {
           submitFitForm(data as FitFormData);
           setDone(true);
           setProcessing(false);
-          setTimeout(() => navigate('/why-this-size'), 1200);
+          
+          if (mode !== 'manual') {
+            setTimeout(() => navigate('/why-this-size'), 1200);
+          }
         }, 600);
       }
     }, 500);
@@ -167,13 +181,74 @@ export function AiFitFinder() {
       : 'border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900'
     } text-neutral-900 dark:text-white text-sm outline-none focus:border-black focus:ring-2 focus:ring-neutral-200 dark:focus:ring-neutral-700 transition-all`;
 
+  const renderAnalysisComplete = () => (
+    <motion.div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 mt-4 mb-4">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <CheckCircle className="w-5 h-5 text-emerald-600" />
+          <p className="font-bold text-emerald-800 text-sm">Analysis Complete — {photoConfidence}% confidence</p>
+        </div>
+        <button type="button" onClick={() => setEditMode(!editMode)} className="text-xs font-bold text-emerald-700 underline hover:text-emerald-900 transition-colors">
+          {editMode ? 'Done' : 'Edit Measurements'}
+        </button>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+        <div className="bg-white rounded-xl p-2.5 shadow-sm border border-emerald-100">
+          <p className="text-[10px] font-bold text-emerald-600">BREED</p>
+          {editMode ? (
+            <select {...register('breed')} className="w-full text-xs font-bold bg-neutral-100 p-1 mt-0.5 rounded outline-none border border-neutral-200">
+              {BREED_NAMES.map(b => <option key={b} value={b}>{b}</option>)}
+            </select>
+          ) : (
+            <p className="text-sm font-bold text-black mt-0.5 truncate" title={watch('breed')}>{watch('breed')}</p>
+          )}
+        </div>
+        <div className="bg-white rounded-xl p-2.5 shadow-sm border border-emerald-100">
+          <p className="text-[10px] font-bold text-emerald-600">CHEST</p>
+          {editMode ? (
+            <input {...register('chestSize', { valueAsNumber: true })} type="number" step="any" className="w-full text-sm font-bold bg-neutral-100 p-1 mt-0.5 rounded outline-none border border-neutral-200" />
+          ) : (
+            <p className="text-sm font-bold text-black mt-0.5">{watch('chestSize')} cm</p>
+          )}
+        </div>
+        <div className="bg-white rounded-xl p-2.5 shadow-sm border border-emerald-100">
+          <p className="text-[10px] font-bold text-emerald-600">BACK</p>
+          {editMode ? (
+            <input {...register('backLength', { valueAsNumber: true })} type="number" step="any" className="w-full text-sm font-bold bg-neutral-100 p-1 mt-0.5 rounded outline-none border border-neutral-200" />
+          ) : (
+            <p className="text-sm font-bold text-black mt-0.5">{watch('backLength')} cm</p>
+          )}
+        </div>
+        <div className="bg-white rounded-xl p-2.5 shadow-sm border border-emerald-100">
+          <p className="text-[10px] font-bold text-emerald-600">NECK</p>
+          {editMode ? (
+            <input {...register('neckSize', { valueAsNumber: true })} type="number" step="any" className="w-full text-sm font-bold bg-neutral-100 p-1 mt-0.5 rounded outline-none border border-neutral-200" />
+          ) : (
+            <p className="text-sm font-bold text-black mt-0.5">{watch('neckSize')} cm</p>
+          )}
+        </div>
+        <div className="bg-white rounded-xl p-2.5 shadow-sm border border-emerald-100">
+          <p className="text-[10px] font-bold text-emerald-600">PAW (W x L)</p>
+          {editMode ? (
+            <div className="flex gap-1 mt-0.5">
+              <input {...register('pawWidth', { valueAsNumber: true })} placeholder="W" type="number" step="any" className="w-full text-xs font-bold bg-neutral-100 p-1 rounded outline-none border border-neutral-200" />
+              <input {...register('pawLength', { valueAsNumber: true })} placeholder="L" type="number" step="any" className="w-full text-xs font-bold bg-neutral-100 p-1 rounded outline-none border border-neutral-200" />
+            </div>
+          ) : (
+            <p className="text-sm font-bold text-black mt-0.5">{watch('pawWidth')}x{watch('pawLength')} cm</p>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+
   return (
     <div className="max-w-screen-md mx-auto px-4 sm:px-6 py-8">
       <PageHeader
         icon={Ruler}
         badge="AI Fit Finder"
         title="Find Your Dog's Perfect Fit"
-        subtitle="Upload photos or enter measurements — our AI delivers a breed-aware size recommendation with 95% accuracy."
+        subtitle="Our AI delivers a breed-aware size recommendation with 95% accuracy."
       />
 
       {/* Hero Banner */}
@@ -195,261 +270,55 @@ export function AiFitFinder() {
         </div>
       </motion.div>
 
-      {/* Mode Toggle */}
-      <div className="flex rounded-2xl border border-neutral-200 dark:border-neutral-700 overflow-hidden mb-6">
-        <button
-          onClick={() => setMode('manual')}
-          className={`flex-1 flex items-center justify-center gap-2 py-3.5 text-sm font-bold uppercase tracking-wide transition-all ${
-            mode === 'manual'
-              ? 'bg-black text-white'
-              : 'bg-white dark:bg-neutral-900 text-neutral-500 hover:text-black hover:bg-neutral-50 dark:hover:bg-neutral-800'
-          }`}
-        >
-          <Ruler className="w-4 h-4" /> Enter Measurements
-        </button>
-        <button
-          onClick={() => setMode('photo')}
-          className={`flex-1 flex items-center justify-center gap-2 py-3.5 text-sm font-bold uppercase tracking-wide transition-all ${
-            mode === 'photo'
-              ? 'bg-black text-white'
-              : 'bg-white dark:bg-neutral-900 text-neutral-500 hover:text-black hover:bg-neutral-50 dark:hover:bg-neutral-800'
-          }`}
-        >
-          <Camera className="w-4 h-4" /> Upload Dog Photos
-        </button>
-      </div>
-
-      {/* ── PHOTO UPLOAD TAB ──────────────────────────────────────────── */}
       <AnimatePresence mode="wait">
-        {mode === 'photo' && (
+        {/* ── SELECTION SCREEN ───────────────────────────────────────────── */}
+        {mode === 'selection' && (
           <motion.div
-            key="photo"
+            key="selection"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
           >
-            <Card className="mb-4">
-              <CardContent className="pt-6 space-y-5">
-                {/* Info banner */}
-                <div className="p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 flex gap-3">
-                  <Sparkles className="w-5 h-5 text-black dark:text-white flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-bold text-neutral-900 dark:text-white mb-1">AI Photo Measurement</p>
-                    <p className="text-xs text-neutral-500 leading-relaxed">
-                      Don't know your dog's measurements? Upload 1–5 clear photos. Our computer vision model
-                      detects breed, estimates chest girth, neck girth, and back length, then auto-fills the form.
-                      <br /><span className="font-semibold text-neutral-700 dark:text-neutral-300">Best results: full body side view in good lighting.</span>
-                    </p>
-                  </div>
+            <h2 className="text-xl font-bold text-center mb-6 text-neutral-900 dark:text-white">How would you like to provide details?</h2>
+            <div className="grid sm:grid-cols-3 gap-4 mb-8">
+              <button onClick={() => setMode('manual')} className="group flex flex-col items-center text-center p-6 rounded-3xl border-2 border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 hover:border-black dark:hover:border-white transition-all hover:shadow-xl">
+                <div className="w-14 h-14 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Ruler className="w-6 h-6 text-neutral-900 dark:text-white" />
                 </div>
-
-                {/* Drag & Drop zone */}
-                <div
-                  onDrop={onDrop}
-                  onDragOver={e => { e.preventDefault(); setIsDragging(true); }}
-                  onDragLeave={() => setIsDragging(false)}
-                  onClick={() => fileInputRef.current?.click()}
-                  className={`relative border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${
-                    isDragging
-                      ? 'border-black bg-neutral-50 dark:bg-neutral-900 scale-[1.01]'
-                      : 'border-neutral-300 dark:border-neutral-700 hover:border-black hover:bg-neutral-50 dark:hover:bg-neutral-900'
-                  }`}
-                >
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    className="hidden"
-                    onChange={e => addFiles(e.target.files)}
-                  />
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="w-14 h-14 rounded-2xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center">
-                      <Upload className="w-7 h-7 text-neutral-600 dark:text-neutral-400" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-neutral-800 dark:text-white text-sm">Drop photos here or click to browse</p>
-                      <p className="text-xs text-neutral-500 mt-1">JPG, PNG, HEIC — up to 5 photos • One photo is enough</p>
-                    </div>
-                  </div>
+                <h3 className="text-base font-bold text-neutral-900 dark:text-white mb-1">Manual Entry</h3>
+                <p className="text-xs text-neutral-500">Give breed, age, and size details manually</p>
+              </button>
+              
+              <button onClick={() => setMode('photo')} className="group flex flex-col items-center text-center p-6 rounded-3xl border-2 border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 hover:border-blue-500 transition-all hover:shadow-xl hover:shadow-blue-500/10">
+                <div className="w-14 h-14 rounded-full bg-blue-50 dark:bg-blue-900/40 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Camera className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
+                <h3 className="text-base font-bold text-neutral-900 dark:text-white mb-1">Upload Photos</h3>
+                <p className="text-xs text-neutral-500">Upload images from different views (Mandatory)</p>
+              </button>
 
-                {/* Preview grid */}
-                {uploadedFiles.length > 0 && (
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">
-                      {uploadedFiles.length} photo{uploadedFiles.length > 1 ? 's' : ''} uploaded
-                    </p>
-                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                      {uploadedFiles.map((f, i) => (
-                        <div key={i} className="relative rounded-xl overflow-hidden aspect-square group">
-                          <img src={f.preview} alt="" className="w-full h-full object-cover" />
-                          <button
-                            onClick={e => { e.stopPropagation(); removeFile(i); }}
-                            className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                          {i === 0 && (
-                            <span className="absolute bottom-1 left-1 text-[9px] font-bold px-1.5 py-0.5 rounded bg-black/70 text-white">PRIMARY</span>
-                          )}
-                        </div>
-                      ))}
-                      {/* Add more */}
-                      {uploadedFiles.length < 5 && (
-                        <button
-                          onClick={() => fileInputRef.current?.click()}
-                          className="aspect-square rounded-xl border-2 border-dashed border-neutral-200 dark:border-neutral-700 flex items-center justify-center hover:border-black transition-colors"
-                        >
-                          <Image className="w-5 h-5 text-neutral-400" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Photo analysis steps (while analyzing) */}
-                {photoAnalyzing && (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2.5">
-                    {PHOTO_STEPS.map((s, i) => (
-                      <motion.div
-                        key={s.label}
-                        initial={{ opacity: 0, x: -16 }}
-                        animate={{ opacity: i <= photoStep ? 1 : 0.25, x: 0 }}
-                        transition={{ delay: i * 0.1 }}
-                        className="flex items-center gap-3"
-                      >
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-sm transition-all ${
-                          i < photoStep ? 'bg-emerald-100' : i === photoStep ? 'bg-black' : 'bg-neutral-100 dark:bg-neutral-800'
-                        }`}>
-                          {i < photoStep
-                            ? <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
-                            : i === photoStep
-                            ? <Loader2 className="w-3.5 h-3.5 text-white animate-spin" />
-                            : <span className="text-neutral-400 text-[10px]">{i + 1}</span>
-                          }
-                        </div>
-                        <span className={`text-sm ${i === photoStep ? 'font-bold text-neutral-900 dark:text-white' : 'text-neutral-400'}`}>
-                          {s.icon} {s.label}
-                        </span>
-                      </motion.div>
-                    ))}
-                  </motion.div>
-                )}
-
-                {/* Photo analysis result */}
-                {photoComplete && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/40 space-y-3"
-                  >
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="w-5 h-5 text-emerald-600" />
-                      <p className="font-bold text-emerald-800 dark:text-emerald-300 text-sm">
-                        AI Analysis Complete — {photoConfidence}% confidence
-                      </p>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      {[
-                        { label: 'Detected Breed', value: detectedBreed },
-                        { label: 'Chest Girth', value: `${watch('chestSize')} cm (est.)` },
-                        { label: 'Neck Girth', value: `${watch('neckSize')} cm (est.)` },
-                        { label: 'Back Length', value: `${watch('backLength')} cm (est.)` },
-                        { label: 'Paw Width', value: `${watch('pawWidth')} cm (est.)` },
-                      ].map(({ label, value }) => (
-                        <div key={label} className="bg-white dark:bg-emerald-900/10 rounded-xl p-2.5">
-                          <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">{label}</p>
-                          <p className="text-sm font-bold text-neutral-900 dark:text-white mt-0.5">{value}</p>
-                        </div>
-                      ))}
-                    </div>
-                    <p className="text-xs text-emerald-700 dark:text-emerald-400">
-                      Measurements auto-filled below. Review and adjust if needed, then click Analyze.
-                    </p>
-                    <button
-                      onClick={() => { setMode('manual'); }}
-                      className="text-xs font-bold text-emerald-700 dark:text-emerald-400 underline underline-offset-2"
-                    >
-                      Review &amp; edit measurements →
-                    </button>
-                  </motion.div>
-                )}
-
-                {/* Analyse button */}
-                {!photoAnalyzing && !photoComplete && (
-                  <Button
-                    type="button"
-                    size="lg"
-                    variant="gradient"
-                    className="w-full"
-                    disabled={uploadedFiles.length === 0}
-                    onClick={runPhotoAnalysis}
-                  >
-                    <Sparkles className="w-5 h-5" /> Analyse {uploadedFiles.length > 0 ? `${uploadedFiles.length} Photo${uploadedFiles.length > 1 ? 's' : ''}` : 'Photos'}
-                  </Button>
-                )}
-
-                {!photoAnalyzing && photoComplete && (
-                  <div className="flex gap-3">
-                    <Button
-                      type="button"
-                      size="lg"
-                      variant="outline"
-                      className="flex-1"
-                      onClick={runPhotoAnalysis}
-                    >
-                      <CheckCircle className="w-5 h-5" /> Re-Analyse
-                    </Button>
-                    <Button
-                      type="button"
-                      size="lg"
-                      variant="gradient"
-                      className="flex-1"
-                      onClick={() => {
-                        const data: FormData = {
-                          dogName: getValues('dogName') || 'My Dog',
-                          breed: detectedBreed,
-                          age: getValues('age') || 3,
-                          gender: getValues('gender') || 'Male',
-                          weight: getValues('weight') || undefined,
-                          chestSize: getValues('chestSize') || undefined,
-                          neckSize: getValues('neckSize') || undefined,
-                          backLength: getValues('backLength') || undefined,
-                          pawWidth: getValues('pawWidth') || undefined,
-                          pawLength: getValues('pawLength') || undefined,
-                        };
-                        onSubmit(data);
-                      }}
-                    >
-                      <Ruler className="w-5 h-5" /> See Recommended Size
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+              <button onClick={() => setMode('video')} className="group flex flex-col items-center text-center p-6 rounded-3xl border-2 border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 hover:border-purple-500 transition-all hover:shadow-xl hover:shadow-purple-500/10">
+                <div className="w-14 h-14 rounded-full bg-purple-50 dark:bg-purple-900/40 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Video className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                </div>
+                <h3 className="text-base font-bold text-neutral-900 dark:text-white mb-1">Upload Video</h3>
+                <p className="text-xs text-neutral-500">Upload a quick video of your dog</p>
+              </button>
+            </div>
           </motion.div>
         )}
 
         {/* ── MANUAL FORM TAB ───────────────────────────────────────────── */}
         {mode === 'manual' && (
-          <motion.div
-            key="manual"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-          >
+          <motion.div key="manual" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}>
+            <div className="mb-4">
+              <button onClick={() => setMode('selection')} className="flex items-center gap-2 text-sm font-bold text-neutral-500 hover:text-black dark:hover:text-white transition-colors">
+                <ArrowLeft className="w-4 h-4" /> Back to Selection
+              </button>
+            </div>
             <Card>
               <CardContent className="pt-6">
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                  {/* Photo AI result notice */}
-                  {photoComplete && (
-                    <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/40 text-emerald-700 dark:text-emerald-300 text-xs font-semibold">
-                      <CheckCircle className="w-4 h-4 flex-shrink-0" />
-                      Measurements pre-filled from AI photo analysis ({photoConfidence}% confidence) — breed: {detectedBreed}
-                    </div>
-                  )}
-
                   {/* Dog Info */}
                   <div>
                     <h3 className="text-sm font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-4 flex items-center gap-2">
@@ -471,7 +340,7 @@ export function AiFitFinder() {
                       </div>
                       <div>
                         <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">Age (years) *</label>
-                        <input {...register('age', { valueAsNumber: true })} type="number" step="0.5" placeholder="e.g. 3" className={inputClass(errors.age)} />
+                        <input {...register('age', { valueAsNumber: true })} type="number" step="any" placeholder="e.g. 3" className={inputClass(errors.age)} />
                         {errors.age && <p className="text-red-500 text-xs mt-1">{errors.age.message}</p>}
                       </div>
                       <div>
@@ -502,31 +371,12 @@ export function AiFitFinder() {
                           <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">{label}</label>
                           <input
                             {...register(field, { valueAsNumber: true })}
-                            type="number" step="0.5" placeholder={placeholder}
+                            type="number" step="any" placeholder={placeholder}
                             className={inputClass(errors[field])}
                           />
                           {errors[field] && <p className="text-red-500 text-xs mt-1">{errors[field]?.message}</p>}
                         </div>
                       ))}
-                    </div>
-
-                    {/* Measurement Guide */}
-                    <div className="mt-4 p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800">
-                      <p className="text-xs font-bold text-neutral-700 dark:text-neutral-300 mb-2 flex items-center gap-1.5">
-                        <Ruler className="w-3.5 h-3.5" /> How to measure
-                      </p>
-                      <ul className="space-y-1 text-xs text-neutral-600 dark:text-neutral-400">
-                        <li><strong>Chest:</strong> Widest part behind the front legs</li>
-                        <li><strong>Neck:</strong> Widest part of the neck, where collar sits</li>
-                        <li><strong>Back:</strong> Base of neck to base of tail</li>
-                      </ul>
-                      <button
-                        type="button"
-                        onClick={() => setMode('photo')}
-                        className="mt-3 text-xs font-bold text-neutral-900 dark:text-white underline underline-offset-2 flex items-center gap-1"
-                      >
-                        <Camera className="w-3 h-3" /> Don't have measurements? Use photo AI instead
-                      </button>
                     </div>
                   </div>
 
@@ -539,29 +389,257 @@ export function AiFitFinder() {
             </Card>
           </motion.div>
         )}
+
+        {/* ── PHOTO UPLOAD TAB ──────────────────────────────────────────── */}
+        {mode === 'photo' && (
+          <motion.div key="photo" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}>
+            <div className="mb-4">
+              <button onClick={() => setMode('selection')} className="flex items-center gap-2 text-sm font-bold text-neutral-500 hover:text-black dark:hover:text-white transition-colors">
+                <ArrowLeft className="w-4 h-4" /> Back to Selection
+              </button>
+            </div>
+            <Card className="mb-4">
+              <CardContent className="pt-6 space-y-5">
+                <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 flex gap-3">
+                  <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-bold text-blue-900 dark:text-blue-300 mb-1">Multi-View AI Measurement</p>
+                    <p className="text-xs text-blue-700 dark:text-blue-400 leading-relaxed">
+                      To ensure 95%+ accuracy without manual measurements, please upload images from <strong>3 mandatory angles</strong>.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-3 gap-4">
+                  {PHOTO_VIEWS.map(view => {
+                    const hasImage = !!photoSlots[view.id];
+                    return (
+                      <div key={view.id} className="space-y-2">
+                        <div
+                          onClick={() => {
+                            setActiveSlot(view.id);
+                            fileInputRef.current?.click();
+                          }}
+                          className={`relative aspect-square rounded-2xl border-2 border-dashed flex flex-col items-center justify-center text-center p-4 cursor-pointer overflow-hidden transition-all ${
+                            hasImage ? 'border-black dark:border-white' : 'border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800'
+                          }`}
+                        >
+                          {hasImage ? (
+                            <>
+                              <img src={photoSlots[view.id].preview} className="absolute inset-0 w-full h-full object-cover" alt={view.label} />
+                              <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                <Camera className="w-8 h-8 text-white mb-2" />
+                                <p className="text-xs font-bold text-white">Replace</p>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="w-6 h-6 text-neutral-400 mb-2" />
+                              <p className="text-sm font-bold text-neutral-700 dark:text-neutral-300">{view.label}</p>
+                              <p className="text-[10px] text-neutral-500 mt-1">{view.desc}</p>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={e => {
+                    const file = e.target.files?.[0];
+                    if (file && activeSlot) {
+                      setPhotoSlots(prev => ({
+                        ...prev,
+                        [activeSlot]: { file, preview: URL.createObjectURL(file) }
+                      }));
+                    }
+                  }}
+                />
+
+                {photoAnalyzing && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2.5">
+                    {PHOTO_STEPS.map((s, i) => (
+                      <motion.div key={s.label} className="flex items-center gap-3">
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-sm ${i < photoStep ? 'bg-emerald-100' : i === photoStep ? 'bg-black' : 'bg-neutral-100 dark:bg-neutral-800'}`}>
+                          {i < photoStep ? <CheckCircle className="w-3.5 h-3.5 text-emerald-600" /> : i === photoStep ? <Loader2 className="w-3.5 h-3.5 text-white animate-spin" /> : <span className="text-neutral-400 text-[10px]">{i + 1}</span>}
+                        </div>
+                        <span className={`text-sm ${i === photoStep ? 'font-bold text-neutral-900 dark:text-white' : 'text-neutral-400'}`}>{s.icon} {s.label}</span>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                )}
+
+                {photoComplete && renderAnalysisComplete()}
+
+                {!photoAnalyzing && !photoComplete && (
+                  <Button
+                    type="button" size="lg" variant="gradient" className="w-full"
+                    disabled={Object.keys(photoSlots).length < 3}
+                    onClick={() => runMockAnalysis('photo')}
+                  >
+                    <Sparkles className="w-5 h-5" /> {Object.keys(photoSlots).length < 3 ? 'Upload all 3 views to continue' : 'Analyse Photos'}
+                  </Button>
+                )}
+
+                {!photoAnalyzing && photoComplete && (
+                  <div className="flex gap-3">
+                    <Button type="button" size="lg" variant="outline" className="flex-1" onClick={() => runMockAnalysis('photo')}><CheckCircle className="w-5 h-5" /> Re-Analyse</Button>
+                    <Button type="button" size="lg" variant="gradient" className="flex-1" onClick={() => onSubmit(getValues())}><Ruler className="w-5 h-5" /> See Recommended Size</Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* ── VIDEO UPLOAD TAB ──────────────────────────────────────────── */}
+        {mode === 'video' && (
+          <motion.div key="video" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}>
+            <div className="mb-4">
+              <button onClick={() => setMode('selection')} className="flex items-center gap-2 text-sm font-bold text-neutral-500 hover:text-black dark:hover:text-white transition-colors">
+                <ArrowLeft className="w-4 h-4" /> Back to Selection
+              </button>
+            </div>
+            <Card className="mb-4">
+              <CardContent className="pt-6 space-y-5">
+                <div className="p-4 rounded-2xl bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 flex gap-3">
+                  <Sparkles className="w-5 h-5 text-purple-600 dark:text-purple-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-bold text-purple-900 dark:text-purple-300 mb-1">AI Video Analysis</p>
+                    <p className="text-xs text-purple-700 dark:text-purple-400 leading-relaxed">
+                      Upload a 5-10 second video walking around your dog. Our AI will extract 3D measurements and capture all necessary angles automatically.
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  onClick={() => videoInputRef.current?.click()}
+                  className={`relative border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${
+                    uploadedVideo ? 'border-purple-500 bg-purple-50/50 dark:bg-purple-900/10' : 'border-neutral-300 hover:border-purple-500 hover:bg-purple-50/50'
+                  }`}
+                >
+                  <input
+                    ref={videoInputRef}
+                    type="file"
+                    accept="video/*"
+                    className="hidden"
+                    onChange={e => {
+                      const file = e.target.files?.[0];
+                      if (file) setUploadedVideo({ file, preview: URL.createObjectURL(file) });
+                    }}
+                  />
+                  {uploadedVideo ? (
+                    <div className="flex flex-col items-center">
+                      <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mb-3 text-purple-600 relative overflow-hidden">
+                        <video src={uploadedVideo.preview} className="absolute inset-0 w-full h-full object-cover opacity-50 blur-sm" />
+                        <Play className="w-6 h-6 z-10" />
+                      </div>
+                      <p className="font-bold text-purple-900 dark:text-purple-300">{uploadedVideo.file.name}</p>
+                      <p className="text-xs text-purple-600 mt-1">Ready for analysis</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="w-14 h-14 rounded-2xl bg-purple-50 dark:bg-purple-900/40 flex items-center justify-center">
+                        <Video className="w-7 h-7 text-purple-600" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-neutral-800 dark:text-white text-sm">Click to browse or drop video here</p>
+                        <p className="text-xs text-neutral-500 mt-1">MP4, WEBM, MOV — Max 50MB</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {videoAnalyzing && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2.5">
+                    {VIDEO_STEPS.map((s, i) => (
+                      <motion.div key={s.label} className="flex items-center gap-3">
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-sm ${i < videoStep ? 'bg-emerald-100' : i === videoStep ? 'bg-black' : 'bg-neutral-100'}`}>
+                          {i < videoStep ? <CheckCircle className="w-3.5 h-3.5 text-emerald-600" /> : i === videoStep ? <Loader2 className="w-3.5 h-3.5 text-white animate-spin" /> : <span className="text-neutral-400 text-[10px]">{i + 1}</span>}
+                        </div>
+                        <span className={`text-sm ${i === videoStep ? 'font-bold' : 'text-neutral-400'}`}>{s.icon} {s.label}</span>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                )}
+
+                {videoComplete && renderAnalysisComplete()}
+
+                {!videoAnalyzing && !videoComplete && (
+                  <Button
+                    type="button" size="lg" variant="gradient" className="w-full"
+                    disabled={!uploadedVideo}
+                    onClick={() => runMockAnalysis('video')}
+                  >
+                    <Sparkles className="w-5 h-5" /> Analyse Video
+                  </Button>
+                )}
+
+                {!videoAnalyzing && videoComplete && (
+                  <div className="flex gap-3">
+                    <Button type="button" size="lg" variant="outline" className="flex-1" onClick={() => runMockAnalysis('video')}><CheckCircle className="w-5 h-5" /> Re-Analyse</Button>
+                    <Button type="button" size="lg" variant="gradient" className="flex-1" onClick={() => onSubmit(getValues())}><Ruler className="w-5 h-5" /> See Recommended Size</Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
       </AnimatePresence>
 
       {/* Processing Overlay */}
       <AnimatePresence>
         {(processing || done) && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
           >
             <motion.div
-              initial={{ scale: 0.85, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
+              initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
               className="bg-white dark:bg-neutral-900 rounded-3xl p-8 w-full max-w-sm text-center shadow-2xl"
             >
               {done ? (
                 <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring' }}>
-                  <div className="w-20 h-20 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center mx-auto mb-4">
+                  <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
                     <CheckCircle className="w-10 h-10 text-emerald-600" />
                   </div>
-                  <h3 className="text-xl font-black text-neutral-900 dark:text-white">Analysis Complete!</h3>
-                  <p className="text-neutral-500 text-sm mt-2">Redirecting to your recommendation...</p>
+                  <h3 className="text-xl font-black text-neutral-900 dark:text-white mb-2">Analysis Complete!</h3>
+                  
+                  {mode === 'manual' ? (
+                    <div className="mt-6 text-left">
+                      <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4 text-center">
+                        Upload a photo of your dog to see them in our Virtual Try-On!
+                      </p>
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        id="manual-photo-upload"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            dispatch({ type: 'SET_USER_DOG_IMAGE', payload: URL.createObjectURL(file) });
+                            navigate('/why-this-size');
+                          }
+                        }}
+                      />
+                      <div className="flex flex-col gap-2">
+                        <Button type="button" variant="gradient" size="lg" onClick={() => document.getElementById('manual-photo-upload')?.click()}>
+                          <Camera className="w-4 h-4 mr-2" /> Upload Dog Photo
+                        </Button>
+                        <Button type="button" variant="outline" size="lg" onClick={() => navigate('/why-this-size')}>
+                          Skip & Continue
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-neutral-500 text-sm mt-2">Redirecting to your recommendation...</p>
+                  )}
                 </motion.div>
               ) : (
                 <>
@@ -571,26 +649,11 @@ export function AiFitFinder() {
                   <h3 className="text-xl font-black text-neutral-900 dark:text-white mb-6">AI Analysis Running</h3>
                   <div className="space-y-3">
                     {PROCESSING_STEPS.map((step, i) => (
-                      <motion.div
-                        key={step}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: i <= stepIdx ? 1 : 0.3, x: 0 }}
-                        transition={{ delay: i * 0.1 }}
-                        className="flex items-center gap-3"
-                      >
-                        <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${
-                          i < stepIdx ? 'bg-emerald-100' : i === stepIdx ? 'bg-black' : 'bg-neutral-100 dark:bg-neutral-800'
-                        }`}>
-                          {i < stepIdx
-                            ? <CheckCircle className="w-3 h-3 text-emerald-600" />
-                            : i === stepIdx
-                            ? <Loader2 className="w-3 h-3 text-white animate-spin" />
-                            : <span className="w-1.5 h-1.5 rounded-full bg-neutral-300 dark:bg-neutral-600 block" />
-                          }
+                      <motion.div key={step} className="flex items-center gap-3">
+                        <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${i < stepIdx ? 'bg-emerald-100' : i === stepIdx ? 'bg-black' : 'bg-neutral-100'}`}>
+                          {i < stepIdx ? <CheckCircle className="w-3 h-3 text-emerald-600" /> : i === stepIdx ? <Loader2 className="w-3 h-3 text-white animate-spin" /> : <span className="w-1.5 h-1.5 rounded-full bg-neutral-300 block" />}
                         </div>
-                        <span className={`text-sm text-left ${i === stepIdx ? 'text-neutral-900 dark:text-white font-semibold' : 'text-neutral-400'}`}>
-                          {step}
-                        </span>
+                        <span className={`text-sm text-left ${i === stepIdx ? 'text-neutral-900 dark:text-white font-semibold' : 'text-neutral-400'}`}>{step}</span>
                       </motion.div>
                     ))}
                   </div>

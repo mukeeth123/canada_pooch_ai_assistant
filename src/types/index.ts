@@ -31,6 +31,7 @@ export interface Product {
   rating: number;
   reviewCount: number;
   imageUrl: string;
+  colors?: { name: string; image: string; hex: string }[];
   description: string;
   recommendationReason: string;
   recommendedFor: string[];
@@ -148,6 +149,8 @@ export interface RoadmapPhase {
 export interface AppState {
   fitFormData: FitFormData | null;
   recommendation: SizeRecommendation | null;
+  userDogImage?: string | null;
+  selectedDogProfile: 'dog1' | 'dog2';
   darkMode: boolean;
   wishlist: string[];
   compareList: string[];
