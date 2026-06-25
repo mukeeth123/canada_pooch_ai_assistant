@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ShoppingBag, Heart, BarChart2, Star, X, Check, Filter,
-  Sun, Snowflake, CloudRain, PersonStanding, Plane, Mountain,
+  ShoppingBag, Heart, BarChart2, Star, X, Check,
   Camera, Loader2, ChevronLeft, ChevronRight, Sparkles,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
@@ -11,7 +10,7 @@ import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { Modal } from '../components/ui/Modal';
 import { PRODUCTS, OUTERWEAR_CATEGORIES, GEAR_CATEGORIES } from '../mock/products';
-import { TRYON_BY_CATEGORY, BREED_PORTRAITS } from '../mock/tryon';
+import { BREED_PORTRAITS } from '../mock/tryon';
 import type { Product } from '../types';
 import { cn } from '../components/ui/cn';
 

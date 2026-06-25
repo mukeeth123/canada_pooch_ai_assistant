@@ -48,10 +48,10 @@ const initialState: AppState = {
 
 function computeRecommendation(form: FitFormData): SizeRecommendation {
   const profile = BREED_PROFILES.find(b => b.breed === form.breed);
-  const chest = form.chestSize;
-  const neck = form.neckSize;
-  const back = form.backLength;
-  const weight = form.weight;
+  const chest = form.chestSize ?? 0;
+  const neck = form.neckSize ?? 0;
+  const back = form.backLength ?? 0;
+  const weight = form.weight ?? 0;
 
   let size = 'M';
   if (chest >= 72 || weight >= 34) size = 'XXL';

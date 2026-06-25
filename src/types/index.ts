@@ -27,7 +27,7 @@ export interface Product {
   id: string;
   name: string;
   price: number;
-  category: 'Parkas & Jackets' | 'Raincoats' | 'Suits' | 'Sweaters & Hoodies' | 'Cooling' | 'Boots' | 'Harnesses' | 'Travel' | 'Outdoor';
+  category: 'Parkas & Jackets' | 'Raincoats' | 'Suits' | 'Sweaters & Hoodies' | 'Cooling' | 'Boots & Shoes' | 'Harnesses' | 'Travel' | 'Outdoor';
   rating: number;
   reviewCount: number;
   imageUrl: string;
