@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Home, Ruler, Info, Eye, ShoppingBag, AlertTriangle,
-  Activity, Map, Moon, Sun, Bell, Menu, X, Search, TrendingUp
+  Home, Ruler, Info, Eye, ShoppingBag,
+  Activity, Map, Moon, Sun, Bell, Menu, X, Search
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { cn } from '../ui/cn';

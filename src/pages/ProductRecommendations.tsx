@@ -11,7 +11,7 @@ import { Badge } from '../components/ui/Badge';
 import { Modal } from '../components/ui/Modal';
 import { PRODUCTS, OUTERWEAR_CATEGORIES, GEAR_CATEGORIES } from '../mock/products';
 import { PRODUCTS_DOG2 } from '../mock/products_dog2';
-import { BREED_PORTRAITS } from '../mock/tryon';
+// import { BREED_PORTRAITS } from '../mock/tryon';
 import DogImage from '../assets/dog/DOG.png';
 import DoggImage from '../assets/dog2/DOGG.png';
 import type { Product } from '../types';

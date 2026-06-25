@@ -1,14 +1,14 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Ruler, CheckCircle, Loader2, Dog, Camera, Upload, X, Image, Sparkles, Video, ArrowLeft, Play } from 'lucide-react';
+import { Ruler, CheckCircle, Loader2, Dog, Camera, Upload, Sparkles, Video, ArrowLeft, Play } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { PageHeader } from '../components/layout/PageHeader';
 import { Button } from '../components/ui/Button';
-import { Card, CardContent, CardHeader } from '../components/ui/Card';
+import { Card, CardContent } from '../components/ui/Card';
 import type { FitFormData } from '../types';
 import { BREED_NAMES } from '../mock/breeds';
 import { BREED_ESTIMATES, DEFAULT_ESTIMATE } from '../mock/tryon';
@@ -81,7 +81,7 @@ export function AiFitFinder() {
   const videoInputRef = useRef<HTMLInputElement>(null);
 
   // common analysis state
-  const [detectedBreed, setDetectedBreed] = useState('');
+  // removed unused detectedBreed
   const [photoConfidence, setPhotoConfidence] = useState(0);
 
   // form submission state

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CheckCircle, Zap, Shield, TrendingUp, Star, ChevronDown, Camera, Ruler, SlidersHorizontal, Palette, Sparkles } from 'lucide-react';
+import { ArrowRight, CheckCircle, Zap, Star, ChevronDown, Camera, Ruler, SlidersHorizontal, Palette, Sparkles } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 
 import DogBase from '../assets/dog/DOG.png';
