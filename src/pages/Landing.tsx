@@ -100,7 +100,7 @@ const fadeUp = (delay = 0) => ({
 
 export function Landing() {
   return (
-    <div className="overflow-x-hidden">
+    <div className="overflow-x-hidden relative">
       {/* Hero */}
       <section className="gradient-hero min-h-screen flex flex-col justify-center relative overflow-hidden">
         {/* Background blobs */}

@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -61,9 +61,12 @@ const PHOTO_VIEWS = [
 export function AiFitFinder() {
   const { state, dispatch, submitFitForm } = useApp();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // mode: selection | manual | photo | video
-  const [mode, setMode] = useState<'selection' | 'manual' | 'photo' | 'video'>('selection');
+  const [mode, setMode] = useState<'selection' | 'manual' | 'photo' | 'video'>(
+    (location.state as any)?.initialMode || 'selection'
+  );
 
   // photo upload state
   const [photoSlots, setPhotoSlots] = useState<Record<string, { file: File, preview: string }>>({});
@@ -164,7 +167,9 @@ export function AiFitFinder() {
           setDone(true);
           setProcessing(false);
           
-          if (mode !== 'manual') {
+          if (location.state && (location.state as any).initialMode) {
+            setTimeout(() => navigate('/recommendations'), 1200);
+          } else if (mode !== 'manual') {
             setTimeout(() => navigate('/why-this-size'), 1200);
           }
         }, 600);

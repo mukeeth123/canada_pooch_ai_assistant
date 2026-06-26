@@ -184,8 +184,19 @@ function FitMeter({ score }: { score: number }) {
   const color = score >= 85 ? '#22C55E' : score >= 70 ? '#F59E0B' : '#EF4444';
   const label = score >= 85 ? 'Ideal Fit' : score >= 70 ? 'Good Fit' : 'Needs Attention';
 
-  // needle: 0% = left (-90°), 100% = right (+90°), 50% = top (0°)
-  const angle = ((score / 100) * 180 - 90) * (Math.PI / 180);
+  // Map score to visual zones:
+  // 85-100: Ideal Fit (Center, -110° to -70°)
+  // 70-84: Too Loose (Right, -45° to 0°)
+  // 0-69: Too Tight (Left, -180° to -135°)
+  let angleDeg = -90;
+  if (score >= 85) {
+    angleDeg = -110 + ((score - 85) / 15) * 40;
+  } else if (score >= 70) {
+    angleDeg = -45 + ((score - 70) / 15) * 45;
+  } else {
+    angleDeg = -180 + (score / 70) * 45;
+  }
+  const angle = angleDeg * (Math.PI / 180);
   const R = 105;
   const cx = 160;
   const cy = 145;
