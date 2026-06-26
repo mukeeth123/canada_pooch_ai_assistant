@@ -32,6 +32,13 @@ function DogSVG({
   const chest = getZoneColor(chestScore);
   const body = getZoneColor(bodyScore);
 
+  const cfg = {
+    neck: { cx: 330, cy: 120, rx: 35, ry: 45, badgeX: 358, badgeY: 20, lineX: 403, lineY: 50 },
+    chest: { cx: 320, cy: 200, rx: 42, ry: 52, badgeX: 22, badgeY: 218, lineX: 68, lineY: 240 },
+    body: { cx: 220, cy: 140, rx: 110, ry: 45, badgeX: 30, badgeY: 20, lineX: 75, lineY: 50 },
+    jacket: "M 340 100 C 340 93 333 85 326 85 L 88 108 C 80 108 78 116 80 126 L 82 242 C 82 248 88 250 93 248 L 323 236 C 330 234 340 228 340 220 Z"
+  };
+
   return (
     <div className="relative w-full">
       {/* Labels above */}
@@ -78,7 +85,7 @@ function DogSVG({
 
         {/* ── BODY FIT ZONE OVERLAY ── */}
         <motion.ellipse
-          cx="265" cy="185" rx="105" ry="52"
+          cx={cfg.body.cx} cy={cfg.body.cy} rx={cfg.body.rx} ry={cfg.body.ry}
           fill={body.fill}
           fillOpacity={0.12}
           stroke={body.stroke}
@@ -91,7 +98,7 @@ function DogSVG({
 
         {/* ── NECK ZONE OVERLAY ── */}
         <motion.ellipse
-          cx="162" cy="130" rx="30" ry="40"
+          cx={cfg.neck.cx} cy={cfg.neck.cy} rx={cfg.neck.rx} ry={cfg.neck.ry}
           fill={neck.fill}
           fillOpacity={0.18}
           stroke={neck.stroke}
@@ -104,7 +111,7 @@ function DogSVG({
 
         {/* ── CHEST ZONE OVERLAY ── */}
         <motion.ellipse
-          cx="158" cy="190" rx="38" ry="48"
+          cx={cfg.chest.cx} cy={cfg.chest.cy} rx={cfg.chest.rx} ry={cfg.chest.ry}
           fill={chest.fill}
           fillOpacity={0.18}
           stroke={chest.stroke}
@@ -117,33 +124,33 @@ function DogSVG({
 
         {/* ── CONNECTOR LINES to labels (dotted callouts) ── */}
         {/* Neck callout */}
-        <line x1="162" y1="118" x2="80" y2="50" stroke={neck.stroke} strokeWidth="1.5" strokeDasharray="4 3" opacity={0.6} />
-        <circle cx="162" cy="118" r="3" fill={neck.fill} />
+        <line x1={cfg.neck.cx} y1={cfg.neck.cy} x2={cfg.neck.lineX} y2={cfg.neck.lineY} stroke={neck.stroke} strokeWidth="1.5" strokeDasharray="4 3" opacity={0.6} />
+        <circle cx={cfg.neck.cx} cy={cfg.neck.cy} r="3" fill={neck.fill} />
         {/* Chest callout */}
-        <line x1="158" y1="200" x2="80" y2="240" stroke={chest.stroke} strokeWidth="1.5" strokeDasharray="4 3" opacity={0.6} />
-        <circle cx="158" cy="200" r="3" fill={chest.fill} />
+        <line x1={cfg.chest.cx} y1={cfg.chest.cy} x2={cfg.chest.lineX} y2={cfg.chest.lineY} stroke={chest.stroke} strokeWidth="1.5" strokeDasharray="4 3" opacity={0.6} />
+        <circle cx={cfg.chest.cx} cy={cfg.chest.cy} r="3" fill={chest.fill} />
         {/* Body callout */}
-        <line x1="280" y1="175" x2="400" y2="50" stroke={body.stroke} strokeWidth="1.5" strokeDasharray="4 3" opacity={0.6} />
-        <circle cx="280" cy="175" r="3" fill={body.fill} />
+        <line x1={cfg.body.cx} y1={cfg.body.cy} x2={cfg.body.lineX} y2={cfg.body.lineY} stroke={body.stroke} strokeWidth="1.5" strokeDasharray="4 3" opacity={0.6} />
+        <circle cx={cfg.body.cx} cy={cfg.body.cy} r="3" fill={body.fill} />
 
         {/* ── ZONE BADGE: NECK ── */}
-        <rect x="30" y="20" width="90" height="34" rx="8" fill={neck.light} stroke={neck.stroke} strokeWidth="1.5" />
-        <text x="75" y="35" textAnchor="middle" fontSize="9" fontWeight="800" fill={neck.fill}>NECK ZONE</text>
-        <text x="75" y="47" textAnchor="middle" fontSize="11" fontWeight="900" fill={neck.stroke}>{neckScore}% {neck.label}</text>
+        <rect x={cfg.neck.badgeX} y={cfg.neck.badgeY} width="90" height="34" rx="8" fill={neck.light} stroke={neck.stroke} strokeWidth="1.5" />
+        <text x={cfg.neck.badgeX + 45} y={cfg.neck.badgeY + 15} textAnchor="middle" fontSize="9" fontWeight="800" fill={neck.fill}>NECK ZONE</text>
+        <text x={cfg.neck.badgeX + 45} y={cfg.neck.badgeY + 27} textAnchor="middle" fontSize="11" fontWeight="900" fill={neck.stroke}>{neckScore}% {neck.label}</text>
 
         {/* ── ZONE BADGE: CHEST ── */}
-        <rect x="22" y="218" width="92" height="34" rx="8" fill={chest.light} stroke={chest.stroke} strokeWidth="1.5" />
-        <text x="68" y="233" textAnchor="middle" fontSize="9" fontWeight="800" fill={chest.fill}>CHEST ZONE</text>
-        <text x="68" y="245" textAnchor="middle" fontSize="11" fontWeight="900" fill={chest.stroke}>{chestScore}% {chest.label}</text>
+        <rect x={cfg.chest.badgeX} y={cfg.chest.badgeY} width="92" height="34" rx="8" fill={chest.light} stroke={chest.stroke} strokeWidth="1.5" />
+        <text x={cfg.chest.badgeX + 46} y={cfg.chest.badgeY + 15} textAnchor="middle" fontSize="9" fontWeight="800" fill={chest.fill}>CHEST ZONE</text>
+        <text x={cfg.chest.badgeX + 46} y={cfg.chest.badgeY + 27} textAnchor="middle" fontSize="11" fontWeight="900" fill={chest.stroke}>{chestScore}% {chest.label}</text>
 
         {/* ── ZONE BADGE: BODY ── */}
-        <rect x="358" y="20" width="90" height="34" rx="8" fill={body.light} stroke={body.stroke} strokeWidth="1.5" />
-        <text x="403" y="35" textAnchor="middle" fontSize="9" fontWeight="800" fill={body.fill}>BODY ZONE</text>
-        <text x="403" y="47" textAnchor="middle" fontSize="11" fontWeight="900" fill={body.stroke}>{bodyScore}% {body.label}</text>
+        <rect x={cfg.body.badgeX} y={cfg.body.badgeY} width="90" height="34" rx="8" fill={body.light} stroke={body.stroke} strokeWidth="1.5" />
+        <text x={cfg.body.badgeX + 45} y={cfg.body.badgeY + 15} textAnchor="middle" fontSize="9" fontWeight="800" fill={body.fill}>BODY ZONE</text>
+        <text x={cfg.body.badgeX + 45} y={cfg.body.badgeY + 27} textAnchor="middle" fontSize="11" fontWeight="900" fill={body.stroke}>{bodyScore}% {body.label}</text>
 
         {/* ── JACKET SILHOUETTE OVERLAY ── */}
         <motion.path
-          d="M 148 115 C 148 108 155 100 162 100 L 380 118 C 388 118 390 126 388 136 L 386 252 C 386 258 380 260 375 258 L 165 246 C 158 244 148 238 148 230 Z"
+          d={cfg.jacket}
           fill="none"
           stroke="#000000"
           strokeWidth="2.5"

@@ -107,9 +107,7 @@ export function AiFitFinder() {
 
     const mockBreed = breedValue && BREED_NAMES.includes(breedValue)
       ? breedValue
-      : (['Golden Retriever', 'Labrador', 'French Bulldog', 'German Shepherd', 'Husky', 'Poodle'][
-          Math.floor(Math.random() * 6)
-        ]);
+      : 'Golden Retriever';
 
     let step = 0;
     const stepsLen = type === 'photo' ? PHOTO_STEPS.length : VIDEO_STEPS.length;
